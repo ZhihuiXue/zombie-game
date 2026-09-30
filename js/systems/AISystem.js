@@ -5,7 +5,9 @@ function gridInfo(){return {cols:Math.ceil(G.WORLD.w/CELL),rows:Math.ceil(G.WORL
 G.invalidatePathField=function(){G.pathField=null;G.pathFieldTimer=0};
 G.updatePathField=function(dt){
   G.pathFieldTimer=(G.pathFieldTimer||0)-dt;
-  if(G.pathField&&G.pathFieldTimer>0)return;
+  const p=G.player; const moved=p&&G._pathPlayerX!=null?Math.hypot(p.x-G._pathPlayerX,p.y-G._pathPlayerY)>45:true;
+  if(!moved&&G.pathField&&G.pathFieldTimer>0)return;
+  if(p){G._pathPlayerX=p.x;G._pathPlayerY=p.y;}
   const {cols,rows}=gridInfo(), total=cols*rows, field=new Int32Array(total);field.fill(-1);
   const px=Math.max(0,Math.min(cols-1,Math.floor(G.player.x/CELL))),py=Math.max(0,Math.min(rows-1,Math.floor(G.player.y/CELL)));
   const pass=new Uint8Array(total);

@@ -53,6 +53,9 @@ G.upgrades=[
 G.resize=function(){G.dpr=Math.min(devicePixelRatio||1,2);G.W=innerWidth;G.H=innerHeight;G.canvas.width=G.W*G.dpr;G.canvas.height=G.H*G.dpr;G.canvas.style.width=G.W+'px';G.canvas.style.height=G.H+'px';G.ctx.setTransform(G.dpr,0,0,G.dpr,0,0);G.vignette=null;G.vignetteW=0;G.vignetteH=0;};
 G.showMessage=function(t,ms=1200){G.ui.message.textContent=t;G.ui.message.style.opacity=1;clearTimeout(G.showMessage.timer);G.showMessage.timer=setTimeout(()=>G.ui.message.style.opacity=0,ms)};
 
+// Runtime-level movement fallback: gameplay must not depend on module initialization order.
+G.moveEntity=G.moveEntity||function(o,vx,vy,seconds){if(!o)return false;const dt=Math.max(0,Math.min(.08,Number(seconds)||0));if(!dt)return false;const ox=o.x,oy=o.y;const can=(x,y)=>typeof G.entityBlocked==='function'?!G.entityBlocked(x,y,o.r):!(x<o.r+15||y<o.r+15||x>G.WORLD.w-o.r-15||y>G.WORLD.h-o.r-15);let moved=false;if(can(ox+vx*dt,oy)){o.x=ox+vx*dt;moved=true}if(can(o.x,oy+vy*dt)){o.y=oy+vy*dt;moved=true}return moved};
+
 export {G};
 
 // Game flow/runtime orchestration. Kept here so the feature modules above can
@@ -80,7 +83,7 @@ G.resetGame=function(){
   G.player.maxMag={1:12,2:30,3:6,4:24,5:5};G.player.mag={1:12,2:30,3:6,4:24,5:5};G.player.reserve={1:Infinity,2:Infinity,3:0,4:0,5:0};G.player.maxReserve={1:Infinity,2:Infinity,3:36,4:96,5:15};G.player.lastFlameFuel=0;G.player.lastFlameSound=0;
   if(G.applyDNABonuses)G.applyDNABonuses(); if(G.applyEquipment)G.applyEquipment();
   for(const k in G.player.mag)G.player.mag[k]=G.player.maxMag[k];
-  G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.generateWorld?.();
+  G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.generateWorld?.();G.findSafePlayerSpawn?.();
   G.ui.menuPanel.classList.add('hidden');G.ui.gameOverPanel.classList.add('hidden');G.saveActiveProfile?.();G.ui.shopPanel.classList.add('hidden');G.ui.levelPanel.classList.add('hidden');
   G.startWave();
 };
@@ -88,7 +91,7 @@ G.resetGame=function(){
 G.startWave=function(){
   if(G.state!=='playing')return;
   G.recordEquipmentUnlocks?.(G.wave);
-  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();if(G.entityBlocked?.(G.player.x,G.player.y,G.player.r+4)){G.findSafePlayerSpawn?.();}G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
+  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();G.findSafePlayerSpawn?.();G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
   begin();
 };
@@ -163,7 +166,7 @@ G.update=function(dt){
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt);
   G.camera.x=Math.max(0,Math.min(G.WORLD.w-G.W,G.player.x-G.W/2));G.camera.y=Math.max(0,Math.min(G.WORLD.h-G.H,G.player.y-G.H/2));
 };
-G.loop=function(ts){const dt=Math.min(40,ts-G.last);G.last=ts;G.update(dt);G.draw();requestAnimationFrame(G.loop)};
+G.loop=function(ts){const dt=Math.min(40,ts-G.last);G.last=ts;try{G.update(dt);G.draw()}catch(err){console.error('[Zombie Outbreak]',err);G.runtimeError=String(err?.stack||err);if(G.ui?.message){G.ui.message.textContent='⚠️ 游戏运行错误，请刷新页面';G.ui.message.style.opacity=1}}requestAnimationFrame(G.loop)};
 
 G.renderProfileSummary=function(){const el=G.ui.profileSummary;if(!el)return;const p=G.profiles?.find(x=>x.id===G.activeProfileId);if(!p)return;el.innerHTML=`<b>👤 ${p.name}</b><br><span class="small">🧬 DNA ${G.dna} · 🏆 Best Wave ${p.bestWave||0} · ☠️ Kills ${G.totalKills}</span>`};
 G.toggleProfilePanel=function(){const p=G.ui.profilePanel;if(!p)return;if(p.classList.contains('hidden')){G.renderProfilePanel?.();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden');G.renderProfileSummary?.()}};
