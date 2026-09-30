@@ -8,11 +8,11 @@ const ROOT = path.resolve(__dirname, "..");
 
 function loadBrowserModule(relativePath, setup = {}) {
   const source = fs.readFileSync(path.join(ROOT, relativePath), "utf8")
-    .replace(/export\\s*\\{G\\};?\\s*$/m, "");
+    .replace(/export\s*\{G\};?\s*$/m, "");
   const sandbox = {
     console,
     performance: { now: () => 1000 },
-    Math: { ...Math, random: () => 0 },
+    Math: new Proxy(Math, { get(target, prop) { return prop === "random" ? () => 0 : target[prop]; } }),
     ...setup
   };
   sandbox.globalThis = sandbox;
