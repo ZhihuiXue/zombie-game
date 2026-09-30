@@ -75,7 +75,7 @@ G.findSafePlayerSpawn=function(){
 
 G.resetGame=function(){
   G.state='playing';G.wave=1;G.waveKills=0;G.waveTotal=0;G.waveTransition=false;G.shopUntil=0;G.weather=null;G.weatherTime=0;
-  G.score=0;G.coins=0;G.kills=0;G.level=1;G.combo=0;G.equipmentSynergiesApplied={};G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme='grassland';G.xp=0;G.xpNeed=100;G.spawnTimer=0;
+  G.score=0;G.coins=0;G.kills=0;G.adaptive?.reset();G.level=1;G.combo=0;G.equipmentSynergiesApplied={};G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme='grassland';G.xp=0;G.xpNeed=100;G.spawnTimer=0;
   G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;
   G.selectedWeapon=1;G.weapons=JSON.parse(JSON.stringify(G.baseWeapons));G.owned={1:true,2:true,3:true,4:false,5:false};
   Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0});
@@ -90,7 +90,7 @@ G.resetGame=function(){
 G.startWave=function(){
   if(G.state!=='playing')return;
   G.recordEquipmentUnlocks?.(G.wave);
-  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();G.findSafePlayerSpawn?.();G.phase=1;if(G.startEvent)G.startEvent();if(G.startWeather)G.startWeather();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
+  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();G.findSafePlayerSpawn?.();G.phase=1;if(G.startEvent)G.startEvent();if(G.startWeather)G.startWeather();G.adaptive?.startWave();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
   begin();
 };
@@ -158,7 +158,7 @@ G.update=function(dt){
   G.spawnTimer-=dt;if(!G.waveTransition&&G.waveKills<G.waveTotal&&G.spawnTimer<=0){G.spawnRandomZombie();G.spawnTimer=Math.max(620,1050-G.wave*10)}
   if(!G.waveTransition&&G.waveKills>=G.waveTotal&&G.zombies.length===0&&!G.boss)G.endWave();
   G.spatialGrid.build();
-  G.updateSkills?.(dt);G.updateEvent?.(dt);G.updateWeather?.(dt);G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);G.resolveActorCollisions?.();
+  G.updateSkills?.(dt);G.updateEvent?.(dt);G.updateWeather?.(dt);G.adaptive?.update(dt);G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);G.resolveActorCollisions?.();
   G.spatialGrid.build();
   G.updateGrenades(dt);G.updateDrops(dt);G.updatePowerups(dt);G.updateParticles(dt);G.updateTexts(dt);
   if(G.comboTimer>0){G.comboTimer-=dt;if(G.comboTimer<=0)G.combo=0}if(G.killSaveTimer>=5000){G.saveActiveProfile?.();G.killSaveTimer=0;}
