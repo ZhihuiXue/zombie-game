@@ -30,6 +30,7 @@ import "./systems/AdaptiveDirector.js";
 import "./player/PlayerProfile.js";
 import "./render/Renderer.js";
 import "./render/CharacterRenderer.js";
+import "./render/V9Visuals.js";
 import "./core/Input.js";
 import "./ui/UI.js";
 
