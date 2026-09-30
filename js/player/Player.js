@@ -3,7 +3,7 @@ const G = globalThis;
 
 G.aim = function(){return Math.atan2(G.mouse.y-(G.player.y-G.camera.y),G.mouse.x-(G.player.x-G.camera.x))};
 
-G.damagePlayer = function(n){if(G.invuln>0||G.state!=='playing')return;G.player.hp-=n;G.invuln=380;G.shake=8;G.texts.push({x:G.player.x,y:G.player.y-30,t:'-'+Math.round(n),life:650,color:'#ff6d6d'});if(G.player.hp<=0)G.gameOver()};
+G.damagePlayer = function(n){if(G.invuln>0||G.state!=='playing')return;if(G.player.shield>0){const absorbed=Math.min(G.player.shield,n);G.player.shield-=absorbed;n-=absorbed;if(n<=0){G.showMessage('🛡️ SHIELD BLOCK',350);return}}n*=1-(G.player.damageReduction||0);G.player.hp-=n;G.invuln=380;G.shake=8;G.texts.push({x:G.player.x,y:G.player.y-30,t:'-'+Math.round(n),life:650,color:'#ff6d6d'});if(G.player.hp<=0)G.gameOver()};
 
 G.dash = function(){if(G.state!=='playing'||G.player.dashCooldown>0)return;G.playSound('dash');let dx=(G.keys.has('d')||G.keys.has('arrowright')?1:0)-(G.keys.has('a')||G.keys.has('arrowleft')?1:0),dy=(G.keys.has('s')||G.keys.has('arrowdown')?1:0)-(G.keys.has('w')||G.keys.has('arrowup')?1:0);if(!dx&&!dy){dx=Math.cos(G.aim());dy=Math.sin(G.aim())}const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;G.player.dashTime=230;G.player.dashCooldown=2200;G.player._dx=dx;G.player._dy=dy;G.player.x=Math.max(30,Math.min(G.WORLD.w-30,G.player.x+dx*150));G.player.y=Math.max(30,Math.min(G.WORLD.h-30,G.player.y+dy*150));if(G.blocked(G.player.x,G.player.y,G.player.r)){G.player.x-=dx*150;G.player.y-=dy*150}};
 

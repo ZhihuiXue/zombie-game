@@ -1,7 +1,7 @@
 // Auto-split from Zombie Outbreak V3.1. Gameplay intentionally unchanged in this refactor.
 const G = globalThis;
 
-G.gainXP = function(n){G.xp+=n;while(G.xp>=G.xpNeed){G.xp-=G.xpNeed;G.xpNeed=Math.floor(G.xpNeed*1.18);G.level++;G.showLevelUp()}};
+G.gainXP = function(n){G.xp+=n*(G.player.xpBoost||1);while(G.xp>=G.xpNeed){G.xp-=G.xpNeed;G.xpNeed=Math.floor(G.xpNeed*1.18);G.level++;G.showLevelUp()}};
 
 G.showLevelUp = function(){G.state='level';G.ui.levelPanel.classList.remove('hidden');G.ui.levelCards.innerHTML='';const opts=[...upgrades].sort(()=>Math.random()-.5).slice(0,3);for(const [id,n,d] of opts){const c=document.createElement('div');c.className='card';c.innerHTML=`<b>${n}</b><br><span class="small">${d}</span>`;c.onclick=()=>{G.applyUpgrade(id);G.ui.levelPanel.classList.add('hidden');G.state='playing'};G.ui.levelCards.appendChild(c)}};
 

@@ -10,6 +10,8 @@ addEventListener("keydown", e=>{
   if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(e.key.toLowerCase())) e.preventDefault();
   if(e.key.toLowerCase()==="b") G.toggleShop();
   if(e.key.toLowerCase()==="g") G.throwGrenade();
+  if(e.key.toLowerCase()==="q") G.useShockwave?.();
+  if(e.key.toLowerCase()==="e") G.useEmergencyHeal?.();
   if(e.key==="Escape") G.closeOverlays();
 });
 addEventListener("keyup", e=>G.keys.delete(e.key.toLowerCase()));

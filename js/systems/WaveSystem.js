@@ -2,6 +2,8 @@
 const G = globalThis;
 
 G.renderShop = function(){
+const equipItems=(G.rollEquipmentChoices?G.rollEquipmentChoices():[]).map(e=>['equip_'+e[0],e[1],e[3],e[4],()=>G.addEquipment(e[0])]);
+const evoItems=[];for(const w of [1,2,3,4,5]){if(G.weaponLevel?.[w]>=8&&!G.evolved?.[w]&&G.owned[w])evoItems.push(['evo_'+w,'⚔️ 进化 '+G.weapons[w].name,G.evolutions[w].desc,260,()=>G.evolveWeapon(w)]);}
 const items=[
 ['grenade','💣 手雷','+1 颗手雷',60,()=>G.player.grenades++],
 ['damage','💥 Damage +10%','永久强化',120,()=>G.player.damage*=1.1],
@@ -13,7 +15,7 @@ const items=[
 ['shotAmmo','🟫 霰弹枪弹药','+6 发',40,()=>G.player.reserve[3]=Math.min(G.player.maxReserve[3],G.player.reserve[3]+6)],
 ['sniperAmmo','🔹 狙击枪弹药','+3 发',60,()=>G.player.reserve[5]=Math.min(G.player.maxReserve[5],G.player.reserve[5]+3)],
 ['flameAmmo','🔥 喷火枪燃料','+24 发',40,()=>G.player.reserve[4]=Math.min(G.player.maxReserve[4],G.player.reserve[4]+24)],
-['heal','🩹 医疗包','回复 40 HP',75,()=>G.player.hp=Math.min(G.player.maxHp,G.player.hp+40)]
+['heal','🩹 医疗包','回复 40 HP',75,()=>G.player.hp=Math.min(G.player.maxHp,G.player.hp+40)],...equipItems,...evoItems
 ];
 G.ui.shopGrid.innerHTML='';
 for(const [id,n,d,c,fn] of items){

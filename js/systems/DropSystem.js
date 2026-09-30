@@ -11,8 +11,8 @@ G.updateTexts = function(dt){for(const t of G.texts){t.y-=18*dt/1000;t.life-=dt}
 
 G.explodeGrenade = function(g){
   G.playSound('explosion');
-  for(const z of G.zombies)if(Math.hypot(z.x-g.x,z.y-g.y)<145)G.damageZombie(z,110*G.player.damage);
-  if(G.boss&&Math.hypot(G.boss.x-g.x,G.boss.y-g.y)<145)G.boss.hp-=110*G.player.damage;
+  const radius=G.player.grenadeRadius||145, damage=G.player.grenadeDamage||110;for(const z of G.zombies)if(Math.hypot(z.x-g.x,z.y-g.y)<radius){z.lastDamageSource='grenade';G.damageZombie(z,damage*G.player.damage);}
+  if(G.boss&&Math.hypot(G.boss.x-g.x,G.boss.y-g.y)<radius)G.damageBoss(damage*G.player.damage);G.metaAdd?.('grenade',1);
   for(let i=0;i<24;i++)G.particles.push({x:g.x,y:g.y,vx:(Math.random()-.5)*260,vy:(Math.random()-.5)*260,life:550,color:'#ffad43',size:3+Math.random()*4});
 };
 

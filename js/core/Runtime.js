@@ -22,7 +22,7 @@ G.ui = {
   shopTimer:document.getElementById("shopTimer"), shopGrid:document.getElementById("shopGrid"),
   startNext:document.getElementById("startNext"), gameOverPanel:document.getElementById("gameOverPanel"),
   gameOverStats:document.getElementById("gameOverStats"), menuPanel:document.getElementById("menuPanel"),
-  soundBtn:document.getElementById("soundBtn")
+  soundBtn:document.getElementById("soundBtn"),buildPanel:document.getElementById("buildPanel"),buildText:document.getElementById("buildText"),buildGrid:document.getElementById("buildGrid"),achievementPanel:document.getElementById("achievementPanel"),achievementGrid:document.getElementById("achievementGrid")
 };
 
 G.WORLD = {w:2600,h:1800};
@@ -35,9 +35,9 @@ G.particles=[]; G.bullets=[]; G.zombies=[]; G.drops=[]; G.texts=[]; G.walls=[]; 
 G.dashTimer=0; G.attackTimer=0; G.reloadTimer=0; G.fireTimer=0; G.invuln=0; G.playTime=0; G.phase=1; G.achievementTimer=0;
 G.audioCtx=null; G.masterGain=null; G.soundOn=true; G.reloadWeapon=0;
 G.introDismissed=JSON.parse(localStorage.getItem('zo_intro_dismissed')||'{}');G.introAfter=null;G.dnaLevels=G.dnaLevels||{};
-G.uiTick=0; G.uiInterval=100; G.vignette=null; G.vignetteW=0; G.vignetteH=0; G.killSaveTimer=0;
+G.uiTick=0; G.uiInterval=100; G.mapTheme='meadow'; G.currentEvent=null; G.eventUntil=0; G.combo=0; G.comboTimer=0; G.weaponXP=0; G.vignette=null; G.vignetteW=0; G.vignetteH=0; G.killSaveTimer=0;
 
-G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,recoil:0,muzzle:0,flameTick:0,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:0,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:96,5:15}};
+G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,recoil:0,muzzle:0,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:0,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:96,5:15}};
 G.weapons={
 1:{name:'Pistol',rate:260,damage:22,spread:.035,shots:1,speed:900,color:'#e8e0c5'},
 2:{name:'SMG',rate:85,damage:11,spread:.11,shots:1,speed:1000,color:'#d7e8e0'},
@@ -58,11 +58,11 @@ export {G};
 // stay focused on their own systems while preserving the original gameplay.
 G.resetGame=function(){
   G.state='playing';G.wave=1;G.waveKills=0;G.waveTotal=0;G.waveTransition=false;G.shopUntil=0;
-  G.score=0;G.coins=0;G.kills=0;G.level=1;G.xp=0;G.xpNeed=100;G.spawnTimer=0;
+  G.score=0;G.coins=0;G.kills=0;G.level=1;G.combo=0;G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme=['meadow','factory','ruins','lab'][Math.floor(Math.random()*4)];G.xp=0;G.xpNeed=100;G.spawnTimer=0;
   G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;
   G.selectedWeapon=1;G.owned={1:true,2:true,3:true,4:false,5:false};
-  Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0});
-  if(G.applyDNABonuses)G.applyDNABonuses();
+  Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0});
+  if(G.applyDNABonuses)G.applyDNABonuses(); if(G.applyEquipment)G.applyEquipment();
   for(const k in G.player.mag)G.player.mag[k]=G.player.maxMag[k];
   G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.makeMap();
   G.ui.menuPanel.classList.add('hidden');G.ui.gameOverPanel.classList.add('hidden');G.ui.shopPanel.classList.add('hidden');G.ui.levelPanel.classList.add('hidden');
@@ -71,7 +71,7 @@ G.resetGame=function(){
 
 G.startWave=function(){
   if(G.state!=='playing')return;
-  G.waveKills=0;G.waveTotal=G.endless?12+Math.floor(G.wave*3.5):10+G.wave*3;G.spawnTimer=650;G.phase=1;
+  G.waveKills=0;G.waveTotal=G.endless?12+Math.floor(G.wave*3.5):10+G.wave*3;G.spawnTimer=650;G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
   if(G.shouldShowEnemyIntro&&G.shouldShowEnemyIntro(G.wave))G.showEnemyIntro(G.wave,begin);else begin();
 };
@@ -94,7 +94,7 @@ G.updateBullets=function(dt){
 
     for(const z of G.spatialGrid.near(b.x,b.y,18)){
       if(b.life<=0)break;if(z.hp<=0||b.hit.has(z))continue;
-      if(Math.hypot(b.x-z.x,b.y-z.y)<z.r+5){b.hit.add(z);G.damageZombie(z,b.damage);if(b.type===4){z.burnUntil=performance.now()+5000*G.player.burnBoost;z.burnTick=0}if(--b.pierce<=0)b.life=0}
+      if(Math.hypot(b.x-z.x,b.y-z.y)<z.r+5){b.hit.add(z);G.damageZombie(z,b.damage);if(b.explosive)G.areaDamage(b.x,b.y,70,b.damage*.55,'player');if(b.type===4){z.burnUntil=performance.now()+5000*G.player.burnBoost;z.burnTick=0}if(--b.pierce<=0)b.life=0}
     }
     if(b.life>0&&G.boss&&Math.hypot(b.x-G.boss.x,b.y-G.boss.y)<G.boss.r+5&&!b.hit.has(G.boss)){b.hit.add(G.boss);G.damageBoss(b.damage);if(b.type!==5)b.life=0}
   }
@@ -110,7 +110,7 @@ G.update=function(dt){
   }
   if(G.state==='level'||G.state==='intro')return;
   G.playTime+=dt;G.killSaveTimer+=dt;G.player.recoil=Math.max(0,G.player.recoil-dt);G.player.muzzle=Math.max(0,G.player.muzzle-dt);G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
-  if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===3||w===5){const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}else G.player.mag[w]=G.player.maxMag[w]}}
+  if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===3||w===4||w===5){const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}}}
   if(G.keys.has('shift')&&!G.keys._shiftUsed){G.keys._shiftUsed=true;G.dash()}if(!G.keys.has('shift'))G.keys._shiftUsed=false;
   if(G.keys.has(' ')&&!G.keys._spaceUsed){G.keys._spaceUsed=true;G.melee()}if(!G.keys.has(' '))G.keys._spaceUsed=false;
   if(G.keys.has('1'))G.selectedWeapon=1;if(G.keys.has('2'))G.selectedWeapon=2;if(G.keys.has('3'))G.selectedWeapon=3;if(G.keys.has('4'))G.selectedWeapon=4;if(G.keys.has('5'))G.selectedWeapon=5;
@@ -120,11 +120,17 @@ G.update=function(dt){
   G.spawnTimer-=dt;if(!G.waveTransition&&G.waveKills<G.waveTotal&&G.spawnTimer<=0){G.spawnRandomZombie();G.spawnTimer=Math.max(420,900-G.wave*18)}
   if(!G.waveTransition&&G.waveKills>=G.waveTotal&&G.zombies.length===0&&!G.boss)G.endWave();
   G.spatialGrid.build();
-  G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);
+  G.updateSkills?.(dt);G.updateEvent?.(dt);G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);
   G.spatialGrid.build();
   G.updateGrenades(dt);G.updateDrops(dt);G.updatePowerups(dt);G.updateParticles(dt);G.updateTexts(dt);
-  if(G.killSaveTimer>=5000){localStorage.setItem('zo_kills',G.totalKills);G.killSaveTimer=0;}
+  if(G.comboTimer>0){G.comboTimer-=dt;if(G.comboTimer<=0)G.combo=0}if(G.killSaveTimer>=5000){localStorage.setItem('zo_kills',G.totalKills);G.killSaveTimer=0;}
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt);
   G.camera.x=Math.max(0,Math.min(G.WORLD.w-G.W,G.player.x-G.W/2));G.camera.y=Math.max(0,Math.min(G.WORLD.h-G.H,G.player.y-G.H/2));
 };
 G.loop=function(ts){const dt=Math.min(40,ts-G.last);G.last=ts;G.update(dt);G.draw();requestAnimationFrame(G.loop)};
+
+G.toggleBuildPanel=function(){const p=G.ui.buildPanel;if(p.classList.contains('hidden')){G.renderBuildPanel();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
+G.renderBuildPanel=function(){if(!G.ui.buildPanel)return;G.ui.buildText.textContent='装备：'+(G.equipmentSummary?.()||'暂无')+' · 武器进化：'+Object.keys(G.evolved||{}).filter(k=>G.evolved[k]).length;G.ui.buildGrid.innerHTML='';for(const slot of ['head','body','boots','module','artifact']){const id=G.equipmentSlots?.[slot];const el=document.createElement('div');el.className='shopItem';el.innerHTML='<b>'+slot.toUpperCase()+'</b><br>'+(id?(G.getEquip(id)?.[1]+'<br><span class="small">'+G.getEquip(id)?.[3]+'</span>'):'<span class="small">空</span>');G.ui.buildGrid.appendChild(el)}};
+
+G.toggleAchievementPanel=function(){const p=G.ui.achievementPanel;if(p.classList.contains('hidden')){G.renderAchievementPanel();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
+G.renderAchievementPanel=function(){if(!G.ui.achievementGrid)return;G.ui.achievementGrid.innerHTML='';for(const [id,a] of Object.entries(G.achievements||{})){const done=!!G.achState?.[id];const el=document.createElement('div');el.className='shopItem'+(done?'':' disabled');el.innerHTML='<b>'+(done?'🏆 ':'🔒 ')+a[0]+'</b><br><span class="small">'+a[1]+'</span><br><strong>'+(done?'已解锁 · +25 DNA':'未解锁')+'</strong>';G.ui.achievementGrid.appendChild(el)}};
