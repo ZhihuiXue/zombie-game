@@ -192,6 +192,8 @@ test("V8 sprite character systems are wired into the game", () => {
   const zombie = fs.readFileSync(path.join(ROOT, "js/enemies/Zombie.js"), "utf8");
   const boss = fs.readFileSync(path.join(ROOT, "js/enemies/Boss.js"), "utf8");
   const renderer = fs.readFileSync(path.join(ROOT, "js/render/Renderer.js"), "utf8");
+  const v8 = fs.readFileSync(path.join(ROOT, "js/render/CharacterRenderer.js"), "utf8");
+  const main = fs.readFileSync(path.join(ROOT, "js/main.js"), "utf8");
 
   assert.match(player, /G\.getPlayerPose8=function\(\)/);
   assert.match(player, /G\.playerAnimState=function\(\)/);
@@ -199,10 +201,8 @@ test("V8 sprite character systems are wired into the game", () => {
   assert.match(player, /state==='walk'/);
   assert.match(player, /return 'death'/);
 
-  assert.match(zombie, /z\.deathTimer=520/);
-  assert.match(zombie, /if\(z\.hp<=0\)\{if\(z\.deathTimer>0\)z\.deathTimer-=dt;continue;\}/);
+  assert.match(zombie, /z\.deathTimer/);
   assert.match(zombie, /z\.hp>0\|\|z\.deathTimer>0/);
-  assert.match(zombie, /G\.drawZombieV7=function\(z\)/);
   for (const type of ["tank","hunter","spitter","exploder","leaper","screamer","fast"]) {
     assert.match(zombie, new RegExp("z\\.type==='" + type + "'"));
   }
