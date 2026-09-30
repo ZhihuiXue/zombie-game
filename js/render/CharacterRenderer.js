@@ -80,7 +80,7 @@ G.drawPlayerV8=function(){
     if(p.shield>0&&G.equipmentHas?.("shield")){ctx.strokeStyle="rgba(100,220,255,.42)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,35+Math.sin(now*.008)*2,0,Math.PI*2);ctx.stroke();}
   });
 };
-const ZOMBIE_SHEET="./assets/v9/zombie-body.svg?v=9.3";
+const ZOMBIE_SHEET="./assets/v9/zombie-body.svg?v=9.2";
 let zombieSheetPromise=null;
 function loadZombieSheet(){
   if(zombieSheetPromise)return zombieSheetPromise;
