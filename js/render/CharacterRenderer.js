@@ -71,7 +71,7 @@ G.drawPlayerV8=function(){
     const state=p.hp<=0?"death":p.hitFlash>0?"hurt":p.dashTime>0?"dash":movingNow?"walk":"idle";
     const a=aimAngle(),dir=playerRow(a),f=state==="walk"||state==="dash"?frame4(now,95):state==="idle"?0:3;
     const bob=state==="walk"?Math.abs(Math.sin(now*.014))*2:Math.sin(now*.0025)*.7;
-    const alpha=G.invuln>0&&Math.floor(G.invuln/70)%2===0?.45:state==="death"?Math.max(0,(p.deathTimer||0)/520):1;
+    const alpha=G.invuln>0&&Math.floor(G.invuln/70)%2===0?.45:state==="death"?(p.deathTimer==null?1:Math.max(0,p.deathTimer/520)):1;
     shadow(ctx,p.x,p.y+27,25,8,.42);
     drawFrame(ctx,img,dir,f,p.x,p.y-3-bob,Math.max(76,p.r*3.0),Math.max(84,p.r*3.5),alpha);
     playerWeaponOverlay(ctx,p,a,now);
