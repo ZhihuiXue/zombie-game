@@ -8,6 +8,7 @@ G.fireFlamethrower=function(){
   if(G.player.reserve[4] < 0) G.player.reserve[4]=0;
   if(G.player.mag[4]<=0){G.startReload();return}
   const a=G.aim();
+  G.adaptive?.recordShot(4);
   const now=performance.now();
   const range=285,cone=.32;
 
@@ -54,7 +55,7 @@ if(G.player.adrenaline&&G.player.hp<G.player.maxHp*.35)G.fireTimer=0;
 if(!G.owned[G.selectedWeapon]){G.showMessage('🔒 请在 Wave 商店购买',800);G.playSound('error');return}
 if(G.selectedWeapon===4){G.fireFlamethrower();return}
 if(G.player.mag[G.selectedWeapon]<=0){G.startReload();return}
-const a=G.aim();G.player.mag[G.selectedWeapon]--;if(G.player.mag[G.selectedWeapon]===0)G.startReload();
+const a=G.aim();G.adaptive?.recordShot(G.selectedWeapon);G.player.mag[G.selectedWeapon]--;if(G.player.mag[G.selectedWeapon]===0)G.startReload();
 G.fireTimer=w.rate/G.player.fireRate;G.player.recoil=Math.min(10,2.5+(w.shots||1)*.7);G.player.muzzle=90;G.shake=Math.max(G.shake,w===5?5:w===3?4:2);
 for(let i=0;i<w.shots;i++){const ang=a+(Math.random()-.5)*w.spread;G.bullets.push({x:G.player.x+Math.cos(ang)*22,y:G.player.y+Math.sin(ang)*22,vx:Math.cos(ang)*w.speed,vy:Math.sin(ang)*w.speed,life:900,damage:w.damage*G.player.damage*(G.selectedWeapon===5?G.player.sniperBoost:1),type:G.selectedWeapon,pierce:w.pierce||1,hit:new Set(),explosive:!!w.explosive})}
 G.playSound(G.selectedWeapon===3?'shotgun':G.selectedWeapon===5?'sniper':G.selectedWeapon===2?'smg':'pistol');
