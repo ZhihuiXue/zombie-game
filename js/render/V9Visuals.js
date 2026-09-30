@@ -176,7 +176,7 @@ G.drawPlayerV9=function(){
   if(G.invuln>0&&Math.floor(G.invuln/70)%2===0)ctx.globalAlpha=.48;
   const S=2.08;ctx.scale(S,S);
   // Large tactical survivor silhouette.
-  ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(2,40,24,5.5,0,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.27)';ctx.beginPath();ctx.ellipse(2,36.5,25,5.8,0,0,TAU);ctx.fill();
   // Legs with boots and knee highlights.
   ctx.lineCap='round';ctx.lineWidth=6.5;
   limb(ctx,-5,7,-4+walk*10,19,4,'#3b454a','#11171a');
