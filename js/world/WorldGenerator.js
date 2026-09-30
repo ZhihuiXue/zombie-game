@@ -11,8 +11,20 @@ G.generateWorld=function(){
   const hasRiver=G.mapTheme==='riverlands'||G.mapTheme==='forestRiver';
   if(hasRiver){
     const horizontal=Math.random()<.55;
-    if(horizontal){const y=rand(420,1180),h=rand(150,210);G.waterRects.push({x:0,y,w:G.WORLD.w,h});const bx=rand(700,1700),bw=170;G.bridges.push({x:bx,y:y-18,w:bw,h:h+36});}
-    else {const x=rand(500,1900),w=rand(150,210);G.waterRects.push({x,y:0,w,h:G.WORLD.h});const by=rand(500,1250),bh=170;G.bridges.push({x:x-18,y:by,w:w+36,h:bh});}
+    // Keep the initial player zone land; the bridge can still be placed elsewhere.
+    if(horizontal){
+      const safeMin=center.y+center.h/2+70, safeMax=G.WORLD.h-300;
+      const topMax=center.y-center.h/2-70;
+      const y= Math.random()<.5 ? rand(260,Math.max(270,topMax-210)) : rand(Math.min(G.WORLD.h-360,safeMin),Math.max(safeMin+1,safeMax));
+      const h=rand(150,210);G.waterRects.push({x:0,y,w:G.WORLD.w,h});
+      const bx=rand(700,1700),bw=170;G.bridges.push({x:bx,y:y-18,w:bw,h:h+36});
+    } else {
+      const safeMin=center.x+center.w/2+70, safeMax=G.WORLD.w-300;
+      const leftMax=center.x-center.w/2-70;
+      const x=Math.random()<.5 ? rand(260,Math.max(270,leftMax-210)) : rand(Math.min(G.WORLD.w-360,safeMin),Math.max(safeMin+1,safeMax));
+      const w=rand(150,210);G.waterRects.push({x,y:0,w,h:G.WORLD.h});
+      const by=rand(500,1250),bh=170;G.bridges.push({x:x-18,y:by,w:w+36,h:bh});
+    }
   }
   // Buildings/rock obstacles never overlap water or bridges, and keep a safe spawn area.
   const obstacleCount=10+Math.min(8,Math.floor(G.wave/4));

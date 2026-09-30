@@ -57,6 +57,20 @@ export {G};
 
 // Game flow/runtime orchestration. Kept here so the feature modules above can
 // stay focused on their own systems while preserving the original gameplay.
+G.findSafePlayerSpawn=function(){
+  const cx=G.WORLD.w/2, cy=G.WORLD.h/2;
+  const candidates=[
+    [cx,cy],[cx-180,cy],[cx+180,cy],[cx,cy-160],[cx,cy+160],
+    [cx-240,cy-180],[cx+240,cy-180],[cx-240,cy+180],[cx+240,cy+180]
+  ];
+  for(const [x,y] of candidates){if(!G.entityBlocked?.(x,y,G.player.r+4)){G.player.x=x;G.player.y=y;return true;}}
+  for(let i=0;i<500;i++){
+    const x=80+Math.random()*(G.WORLD.w-160),y=80+Math.random()*(G.WORLD.h-160);
+    if(!G.entityBlocked?.(x,y,G.player.r+4)){G.player.x=x;G.player.y=y;return true;}
+  }
+  G.player.x=cx;G.player.y=cy;return false;
+};
+
 G.resetGame=function(){
   G.state='playing';G.wave=1;G.waveKills=0;G.waveTotal=0;G.waveTransition=false;G.shopUntil=0;
   G.score=0;G.coins=0;G.kills=0;G.level=1;G.combo=0;G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme='grassland';G.xp=0;G.xpNeed=100;G.spawnTimer=0;
@@ -74,7 +88,7 @@ G.resetGame=function(){
 G.startWave=function(){
   if(G.state!=='playing')return;
   G.recordEquipmentUnlocks?.(G.wave);
-  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();if(G.entityBlocked?.(G.player.x,G.player.y,G.player.r+4)){G.player.x=G.WORLD.w/2;G.player.y=G.WORLD.h/2;}G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
+  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();if(G.entityBlocked?.(G.player.x,G.player.y,G.player.r+4)){G.findSafePlayerSpawn?.();}G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
   begin();
 };
