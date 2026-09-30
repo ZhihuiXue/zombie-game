@@ -14,7 +14,7 @@ G.updatePathField=function(dt){
   for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
     const wx=x*CELL+CELL/2,wy=y*CELL+CELL/2;
     // Conservative radius: keeps all zombie body types out of terrain.
-    pass[y*cols+x]=G.blocked(wx,wy,20)?0:1;
+    pass[y*cols+x]=G.blocked(wx,wy,38)?0:1;
   }
   // Always make the player's cell a target, even if its edge is close to an obstacle.
   pass[py*cols+px]=1;
@@ -23,6 +23,17 @@ G.updatePathField=function(dt){
   const dirs=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
   while(head<tail){const x=qx[head],y=qy[head],base=field[y*cols+x];head++;for(const [dx,dy] of dirs){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=cols||ny>=rows)continue;const i=ny*cols+nx;if(!pass[i]||field[i]>=0)continue;field[i]=base+(dx&&dy?14:10);qx[tail]=nx;qy[tail]=ny;tail++;}}
   G.pathField={field,cols,rows,cell:CELL};G.pathFieldTimer=280;
+};
+G.nearestBridgePoint=function(x,y,tx,ty,r=20){
+  let best=null,bestScore=Infinity;
+  for(const b of G.bridges||[]){
+    const vertical=b.h>b.w;
+    const bx=vertical?Math.max(b.x+r,Math.min(x,b.x+b.w-r)):Math.max(b.x,Math.min(x,b.x+b.w));
+    const by=vertical?Math.max(b.y,Math.min(y,b.y+b.h)):Math.max(b.y+r,Math.min(y,b.y+b.h-r));
+    const score=Math.hypot(x-bx,y-by)+Math.hypot(tx-bx,ty-by)*0.35;
+    if(score<bestScore){bestScore=score;best={x:bx,y:by};}
+  }
+  return best;
 };
 G.aiPathMove=function(z,tx,ty,speed,dt){
   const pf=G.pathField;if(!pf){G.aiMoveToward(z,tx,ty,speed,dt);return true;}

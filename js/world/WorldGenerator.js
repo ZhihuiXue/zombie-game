@@ -17,13 +17,13 @@ G.generateWorld=function(){
       const topMax=center.y-center.h/2-70;
       const y= Math.random()<.5 ? rand(260,Math.max(270,topMax-210)) : rand(Math.min(G.WORLD.h-360,safeMin),Math.max(safeMin+1,safeMax));
       const h=rand(150,210);G.waterRects.push({x:0,y,w:G.WORLD.w,h});
-      const bx=rand(700,1700),bw=170;G.bridges.push({x:bx,y:y-18,w:bw,h:h+36});
+      const bx=rand(700,1700),bw=220;G.bridges.push({x:bx,y:y-34,w:bw,h:h+68,kind:'bridge'});
     } else {
       const safeMin=center.x+center.w/2+70, safeMax=G.WORLD.w-300;
       const leftMax=center.x-center.w/2-70;
       const x=Math.random()<.5 ? rand(260,Math.max(270,leftMax-210)) : rand(Math.min(G.WORLD.w-360,safeMin),Math.max(safeMin+1,safeMax));
       const w=rand(150,210);G.waterRects.push({x,y:0,w,h:G.WORLD.h});
-      const by=rand(500,1250),bh=170;G.bridges.push({x:x-18,y:by,w:w+36,h:bh});
+      const by=rand(500,1250),bh=220;G.bridges.push({x:x-34,y:by,w:w+68,h:bh,kind:'bridge'});
     }
   }
   // Buildings/rock obstacles never overlap water or bridges, and keep a safe spawn area.
