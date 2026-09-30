@@ -217,13 +217,13 @@ G.drawPlayerV9=function(){
   ctx.translate(-recoil,0);
   const gun=G.selectedWeapon,metal='#172126',edge='#718086';
   ctx.fillStyle=metal;ctx.strokeStyle=edge;ctx.lineWidth=1;
-  if(gun===1){roundRect(ctx,14,-2.8,28,5.6,2);ctx.fill();ctx.stroke();ctx.fillStyle='#0d1417';ctx.fillRect(20,2,6,11);ctx.fillStyle='#839096';ctx.fillRect(39,-2,9,2.5);}
-  else if(gun===2){roundRect(ctx,12,-3,36,6.5,2);ctx.fill();ctx.stroke();ctx.fillStyle='#0d1417';ctx.fillRect(20,3,7,13);ctx.fillStyle='#68787e';ctx.fillRect(40,-3,11,2.5);}
-  else if(gun===3){ctx.fillStyle='#3c3027';roundRect(ctx,13,-2.5,32,6,2);ctx.fill();ctx.stroke();ctx.fillStyle='#171b1d';ctx.fillRect(20,3,7,13);ctx.fillStyle='#a17a50';ctx.fillRect(40,0,10,3);}
-  else if(gun===4){ctx.fillStyle='#343d40';roundRect(ctx,12,-4.5,31,10,3);ctx.fill();ctx.stroke();ctx.fillStyle='#d27a27';ctx.fillRect(17,-6,11,2.5);ctx.fillStyle='#151b1e';ctx.fillRect(23,5,9,10);}
-  else {roundRect(ctx,11,-3,43,6.5,2);ctx.fill();ctx.stroke();ctx.fillStyle='#0d1417';ctx.fillRect(20,3,8,13);ctx.fillStyle='#6d858e';ctx.fillRect(43,-5,13,2.5);ctx.fillStyle='#91d2ff';ctx.fillRect(51,-2,8,2);}
-  ctx.fillStyle='#0b1114';ctx.fillRect(gun===5?54:gun===4?43:gun===3?50:gun===2?51:48,-2,7,3);
-  if(flash>0&&gun!==4){const q=clamp(flash/90),c=G.weapons?.[gun]?.color||'#ffd36b';ctx.globalAlpha=q;ctx.shadowColor=c;ctx.shadowBlur=18;ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(54,0);ctx.lineTo(70,-8);ctx.lineTo(63,0);ctx.lineTo(70,8);ctx.closePath();ctx.fill();ctx.fillStyle='#fff4ad';ctx.beginPath();ctx.arc(55,0,3+q*2,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;}
+  if(gun===1){roundRect(ctx,14,-2.8,22,5.6,2);ctx.fill();ctx.stroke();ctx.fillStyle='#0d1417';ctx.fillRect(18,2,6,10);ctx.fillStyle='#839096';ctx.fillRect(32,-2,6,2.5);}
+  else if(gun===2){roundRect(ctx,12,-3,27,6.5,2);ctx.fill();ctx.stroke();ctx.fillStyle='#0d1417';ctx.fillRect(18,3,7,11);ctx.fillStyle='#68787e';ctx.fillRect(34,-3,7,2.5);}
+  else if(gun===3){ctx.fillStyle='#3c3027';roundRect(ctx,13,-2.5,25,6,2);ctx.fill();ctx.stroke();ctx.fillStyle='#171b1d';ctx.fillRect(18,3,7,11);ctx.fillStyle='#a17a50';ctx.fillRect(34,0,7,3);}
+  else if(gun===4){ctx.fillStyle='#343d40';roundRect(ctx,12,-4.5,25,10,3);ctx.fill();ctx.stroke();ctx.fillStyle='#d27a27';ctx.fillRect(16,-6,9,2.5);ctx.fillStyle='#151b1e';ctx.fillRect(21,5,8,10);}
+  else {roundRect(ctx,11,-3,31,6.5,2);ctx.fill();ctx.stroke();ctx.fillStyle='#0d1417';ctx.fillRect(18,3,8,11);ctx.fillStyle='#6d858e';ctx.fillRect(33,-5,8,2.5);ctx.fillStyle='#91d2ff';ctx.fillRect(39,-2,5,2);}
+  const muzzleX=gun===5?43:gun===4?38:gun===3?41:gun===2?41:38;ctx.fillStyle='#0b1114';ctx.fillRect(muzzleX,-2,5,3);
+  if(flash>0&&gun!==4){const q=clamp(flash/90),c=G.weapons?.[gun]?.color||'#ffd36b';ctx.globalAlpha=q;ctx.shadowColor=c;ctx.shadowBlur=18;ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(muzzleX,0);ctx.lineTo(muzzleX+11,-6);ctx.lineTo(muzzleX+6,0);ctx.lineTo(muzzleX+11,6);ctx.closePath();ctx.fill();ctx.fillStyle='#fff4ad';ctx.beginPath();ctx.arc(muzzleX,0,3+q*2,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1;}
   ctx.restore();
   if(G.equipmentHas?.('shield')&&p.shield>0){ctx.strokeStyle='rgba(93,220,255,.5)';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(0,1,25+Math.sin(now*.008)*1.5,0,TAU);ctx.stroke();}
   if(p.dashTime>0){ctx.strokeStyle='rgba(105,220,255,.55)';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,25+Math.sin(now*.03)*3,0,TAU);ctx.stroke();}
