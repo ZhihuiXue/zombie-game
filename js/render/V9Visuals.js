@@ -198,14 +198,10 @@ G.drawPlayerV9=function(){
 G.drawPlayer=G.drawPlayerV9;
 
 G.drawZombieV9=function(z){
-  // Reuse the richer V7 silhouettes as the base, then add V9 lighting/readability.
+  // Single synchronous zombie body renderer. Effects must never replace the body.
   if(G.drawZombieV8)G.drawZombieV8(z);
   const ctx=G.ctx,now=performance.now();
   if(z.hp<=0)return;
-  const glow={exploder:'#ff6b35',spitter:'#6ff0b5',screamer:'#e87cff',hunter:'#ffd15b',leaper:'#ffcf5a',tank:'#b9c9d0',fast:'#ffd56a'}[z.type];
-  if(glow){
-    ctx.save();ctx.globalAlpha=.16;ctx.shadowColor=glow;ctx.shadowBlur=18;ctx.fillStyle=glow;ctx.beginPath();ctx.arc(z.x,z.y-rSafe(z)*.2,rSafe(z)*.72,0,TAU);ctx.fill();ctx.restore();
-  }
   if(z.stun>0){
     ctx.save();ctx.translate(z.x,z.y-rSafe(z)*1.25);ctx.fillStyle='#ffe18a';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('✦',0,0);ctx.restore();
   }
