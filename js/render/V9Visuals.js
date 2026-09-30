@@ -22,6 +22,36 @@ G.drawWorldV9=function(){
       x.fillStyle=n>.5?'rgba(130,155,135,.055)':'rgba(0,0,0,.045)';
       x.fillRect(gx,gy,18,18);
     }
+    // Rich ground dressing: cracked asphalt, grass tufts, puddles, tire marks and scattered litter.
+    for(let i=0;i<420;i++){
+      const px=24+hash(i,41)*(W-48),py=24+hash(i,67)*(H-48),n=hash(i,93);
+      if(n<.34){
+        x.strokeStyle='rgba(6,12,9,.26)';x.lineWidth=1+hash(i,12)*1.4;
+        x.beginPath();x.moveTo(px,py);x.lineTo(px+7+hash(i,18)*18,py+(hash(i,19)-.5)*8);x.stroke();
+      }else if(n<.72){
+        x.fillStyle='rgba(18,30,21,.28)';x.fillRect(px,py,1.5+hash(i,21)*2,4+hash(i,22)*7);
+        x.fillStyle='rgba(118,151,91,.18)';x.fillRect(px+2,py-2,1.2,4);
+      }else{
+        x.save();x.translate(px,py);x.rotate(hash(i,27)*TAU);
+        x.fillStyle='rgba(9,15,13,.38)';x.fillRect(-3,-1,6,2);
+        x.fillStyle='rgba(177,166,129,.18)';x.fillRect(-2,-3,4,1);
+        x.restore();
+      }
+    }
+    // Small puddles and oil stains give the ground more material variation.
+    for(let i=0;i<55;i++){
+      const px=45+hash(i,101)*(W-90),py=45+hash(i,131)*(H-90),rx=6+hash(i,151)*18,ry=2+hash(i,161)*6;
+      x.fillStyle=i%3===0?'rgba(12,25,28,.22)':'rgba(30,48,39,.20)';
+      x.beginPath();x.ellipse(px,py,rx,ry,hash(i,171)*TAU,0,TAU);x.fill();
+      x.strokeStyle='rgba(130,188,180,.10)';x.lineWidth=1;x.stroke();
+    }
+    // Road-side curbs and faded lane paint, kept underneath structures/water.
+    const rcx=W/2,rcy=H/2;
+    x.strokeStyle='rgba(121,126,111,.16)';x.lineWidth=104;x.lineCap='round';
+    for(const [x2,y2] of [[rcx,0],[rcx,H],[0,rcy],[W,rcy]]){x.beginPath();x.moveTo(rcx,rcy);x.lineTo(x2,y2);x.stroke();}
+    x.strokeStyle='rgba(174,164,127,.13)';x.lineWidth=3;x.setLineDash([26,30]);
+    for(const [x2,y2] of [[rcx,0],[rcx,H],[0,rcy],[W,rcy]]){x.beginPath();x.moveTo(rcx,rcy);x.lineTo(x2,y2);x.stroke();}
+    x.setLineDash([]);
     // Broken paving / dirt seams.
     x.strokeStyle='rgba(4,10,8,.20)';x.lineWidth=2;
     for(let y=90;y<H;y+=96){
@@ -69,6 +99,25 @@ G.drawWorldV9=function(){
         x.strokeStyle='rgba(190,210,202,.12)';x.strokeRect(px-ww/2,py-hh/2,ww,hh);
       }
       x.fillStyle='rgba(18,22,20,.75)';x.fillRect(a.x+a.w*.42,a.y+a.h*.64,a.w*.16,a.h*.36);
+    }
+    // Rooftop details: vents, skylights, AC units and roof wear make buildings read as structures.
+    for(let i=0;i<(G.walls||[]).length;i++){
+      const a=G.walls[i]; if(a.kind==='tree')continue;
+      const n=Math.max(1,Math.floor(a.w*a.h/2600));
+      for(let j=0;j<n;j++){
+        const px=a.x+10+hash(i,j*7+201)*Math.max(12,a.w-20),py=a.y+10+hash(i,j*11+231)*Math.max(12,a.h-20);
+        if(j%3===0){
+          x.fillStyle='rgba(11,16,16,.72)';x.fillRect(px-7,py-5,14,10);
+          x.strokeStyle='rgba(157,171,166,.25)';x.strokeRect(px-7,py-5,14,10);
+          x.fillStyle='rgba(109,128,125,.22)';x.fillRect(px-4,py-3,8,2);
+        }else{
+          x.fillStyle='rgba(19,25,23,.72)';x.fillRect(px-5,py-4,10,8);
+          x.fillStyle='rgba(137,157,151,.20)';x.fillRect(px-3,py-2,6,2);
+        }
+      }
+      // Entrance shadow and a tiny light strip.
+      x.fillStyle='rgba(5,9,8,.82)';x.fillRect(a.x+a.w*.42,a.y+a.h*.66,a.w*.16,a.h*.34);
+      x.fillStyle='rgba(221,177,96,.20)';x.fillRect(a.x+a.w*.45,a.y+a.h*.69,a.w*.10,2);
     }
     // Trees / bushes with layered crowns.
     for(const t of G.trees||[]){
