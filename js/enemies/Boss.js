@@ -1,7 +1,7 @@
 // Auto-split from Zombie Outbreak V3.1. Gameplay intentionally unchanged in this refactor.
 const G = globalThis;
 
-G.spawnBoss = function(){if(G.boss||G.state!=='playing')return;const p=G.spawnPoint();G.boss={x:p.x,y:p.y,r:58,hp:900+G.wave*180,maxHp:900+G.wave*180,attack:0,shoot:0,phase:1,flash:0};G.showMessage('👑 BOSS INCOMING!',2200);G.playSound('boss')};
+G.spawnBoss = function(){if(G.boss||G.state!=='playing')return;let p=null;for(let i=0;i<300;i++){const q=G.spawnPoint();if(!G.blocked(q.x,q.y,58)){p=q;break}}if(!p){const bridge=G.nearestBridgePoint?.(G.player.x,G.player.y,G.player.x,G.player.y,58);if(bridge&&!G.blocked(bridge.x,bridge.y,58))p=bridge}if(!p){p={x:Math.max(80,Math.min(G.WORLD.w-80,G.player.x)),y:80};}G.boss={x:p.x,y:p.y,r:58,hp:900+G.wave*180,maxHp:900+G.wave*180,attack:0,shoot:0,phase:1,flash:0};G.invalidatePathField?.();G.showMessage('👑 BOSS INCOMING!',2200);G.playSound('boss')};
 
 G.updateBoss = function(dt){
   if(!G.boss)return;
@@ -14,7 +14,7 @@ G.updateBoss = function(dt){
   const a=Math.atan2(G.player.y-G.boss.y,G.player.x-G.boss.x);
   G.boss.attack-=dt;G.boss.shoot-=dt;G.boss.special=(G.boss.special||0)-dt;
   const moveSpeed=G.boss.phase===3?95:G.boss.phase===2?78:65;
-  if(d>115)G.moveEntity(G.boss,Math.cos(a)*moveSpeed,Math.sin(a)*moveSpeed,dt/1000);
+  if(d>115){const moved=G.moveEntity(G.boss,Math.cos(a)*moveSpeed,Math.sin(a)*moveSpeed,dt/1000);if(!moved){const bridge=G.nearestBridgePoint?.(G.boss.x,G.boss.y,G.player.x,G.player.y,58);if(bridge){const ba=Math.atan2(bridge.y-G.boss.y,bridge.x-G.boss.x);G.moveEntity(G.boss,Math.cos(ba)*moveSpeed,Math.sin(ba)*moveSpeed,dt/1000);}else G.aiPathMove?.(G.boss,G.player.x,G.player.y,moveSpeed,dt);}}
   if(d<G.boss.r+G.player.r+12&&G.boss.attack<=0){G.damagePlayer(18+G.boss.phase*4);G.boss.attack=G.boss.phase===3?520:700}
   if(G.boss.shoot<=0){
     G.boss.shoot=G.boss.phase===3?620:G.boss.phase===2?900:1200;
