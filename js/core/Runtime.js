@@ -53,8 +53,7 @@ G.upgrades=[
 G.resize=function(){G.dpr=Math.min(devicePixelRatio||1,2);G.W=innerWidth;G.H=innerHeight;G.canvas.width=G.W*G.dpr;G.canvas.height=G.H*G.dpr;G.canvas.style.width=G.W+'px';G.canvas.style.height=G.H+'px';G.ctx.setTransform(G.dpr,0,0,G.dpr,0,0);G.vignette=null;G.vignetteW=0;G.vignetteH=0;};
 G.showMessage=function(t,ms=1200){G.ui.message.textContent=t;G.ui.message.style.opacity=1;clearTimeout(G.showMessage.timer);G.showMessage.timer=setTimeout(()=>G.ui.message.style.opacity=0,ms)};
 
-// Runtime-level movement fallback: gameplay must not depend on module initialization order.
-G.moveEntity=G.moveEntity||function(o,vx,vy,seconds){if(!o)return false;const dt=Math.max(0,Math.min(.08,Number(seconds)||0));if(!dt)return false;const ox=o.x,oy=o.y;const can=(x,y)=>typeof G.entityBlocked==='function'?!G.entityBlocked(x,y,o.r):!(x<o.r+15||y<o.r+15||x>G.WORLD.w-o.r-15||y>G.WORLD.h-o.r-15);let moved=false;if(can(ox+vx*dt,oy)){o.x=ox+vx*dt;moved=true}if(can(o.x,oy+vy*dt)){o.y=oy+vy*dt;moved=true}return moved};
+// Terrain movement is provided by world/WorldCollision.js.
 
 export {G};
 
