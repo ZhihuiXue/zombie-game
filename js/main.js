@@ -25,6 +25,7 @@ import "./systems/Skills.js";
 import "./systems/Evolution.js";
 import "./systems/Achievements.js";
 import "./systems/Events.js";
+import "./systems/Weather.js";
 import "./player/PlayerProfile.js";
 import "./render/Renderer.js";
 import "./render/ZombieRenderer.js";
