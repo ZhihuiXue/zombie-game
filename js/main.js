@@ -32,6 +32,7 @@ import "./render/Renderer.js?v=10.1.0";
 import "./render/V9Visuals.js?v=10.1.0";
 import "./core/Input.js";
 import "./render/V10Art.js?v=10.1.0";
+import "./render/V10Directional.js?v=10.2.0";
 import "./ui/UI.js";
 
 const G=globalThis;
