@@ -168,8 +168,6 @@ test("V6.0 lifecycle wiring is present in the real source", () => {
   const player = fs.readFileSync(path.join(ROOT, "js/player/Player.js"), "utf8");
   const weapons = fs.readFileSync(path.join(ROOT, "js/player/Weapons.js"), "utf8");
   const renderer = fs.readFileSync(path.join(ROOT, "js/render/Renderer.js"), "utf8");
-  const v8 = fs.readFileSync(path.join(ROOT, "js/render/CharacterRenderer.js"), "utf8");
-  const main = fs.readFileSync(path.join(ROOT, "js/main.js"), "utf8");
   const css = fs.readFileSync(path.join(ROOT, "css/main.css"), "utf8");
 
   assert.match(main, /systems\/AdaptiveDirector\.js/);
