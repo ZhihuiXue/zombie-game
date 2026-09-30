@@ -14,7 +14,7 @@ G.updatePathField=function(dt){
   for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
     const wx=x*CELL+CELL/2,wy=y*CELL+CELL/2;
     // Conservative radius: keeps all zombie body types out of terrain.
-    pass[y*cols+x]=G.blocked(wx,wy,38)?0:1;
+    pass[y*cols+x]=G.blocked(wx,wy,62)?0:1;
   }
   // Always make the player's cell a target, even if its edge is close to an obstacle.
   pass[py*cols+px]=1;
@@ -61,6 +61,14 @@ G.aiPathMove=function(z,tx,ty,speed,dt){
       const dd=Math.hypot(q.qx-z.x,q.qy-z.y)||1;
       const ox=z.x,oy=z.y;G.moveEntity(z,(q.qx-z.x)/dd*speed,(q.qy-z.y)/dd*speed,dt/1000);
       if(Math.hypot(z.x-ox,z.y-oy)>0.05)return true;
+    }
+  }
+  // If the direct route is blocked by water/terrain, explicitly route toward a bridge.
+  if(G.circleHitsWater?.(z.x,z.y,z.r)){
+    const bridge=G.nearestBridgePoint?.(z.x,z.y,G.player.x,G.player.y,Math.min(62,z.r+4));
+    if(bridge){
+      const dx2=bridge.x-z.x,dy2=bridge.y-z.y,d2=Math.hypot(dx2,dy2)||1;
+      if(G.moveEntity(z,dx2/d2*speed,dy2/d2*speed,dt/1000))return true;
     }
   }
   return G.aiMoveToward(z,tx,ty,speed,dt);
