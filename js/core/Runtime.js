@@ -133,7 +133,7 @@ G.updateBullets=function(dt){
 
     for(const z of G.spatialGrid.near(b.x,b.y,18)){
       if(b.life<=0)break;if(z.hp<=0||b.hit.has(z))continue;
-      if(Math.hypot(b.x-z.x,b.y-z.y)<z.r+5){b.hit.add(z);G.damageZombie(z,b.damage);if(b.explosive)G.areaDamage(b.x,b.y,70,b.damage*.55,'player');if(b.type===4){z.burnUntil=performance.now()+5000*G.player.burnBoost;z.burnTick=0}if(--b.pierce<=0)b.life=0}
+      if(Math.hypot(b.x-z.x,b.y-z.y)<z.r+5){b.hit.add(z);G.damageZombie(z,b.damage,{angle:Math.atan2(b.vy,b.vx),knockback:b.type===3?125:b.type===5?95:b.type===4?38:b.type===2?18:28});if(b.explosive)G.areaDamage(b.x,b.y,70,b.damage*.55,'player');if(b.type===4){z.burnUntil=performance.now()+5000*G.player.burnBoost;z.burnTick=0}if(--b.pierce<=0)b.life=0}
     }
     if(b.life>0&&G.boss&&Math.hypot(b.x-G.boss.x,b.y-G.boss.y)<G.boss.r+5&&!b.hit.has(G.boss)){b.hit.add(G.boss);G.damageBoss(b.damage);if(b.type!==5)b.life=0}
   }
