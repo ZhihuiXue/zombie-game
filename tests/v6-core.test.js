@@ -169,8 +169,8 @@ test("V6.0 lifecycle wiring is present in the real source", () => {
   const renderer = fs.readFileSync(path.join(ROOT, "js/render/Renderer.js"), "utf8");
   const css = fs.readFileSync(path.join(ROOT, "css/main.css"), "utf8");
 
-  assert.match(main, /systems\\/AdaptiveDirector\\.js/);
-  assert.match(main, /systems\\/Weather\\.js/);
+  assert.match(main, /systems\/AdaptiveDirector\.js/);
+  assert.match(main, /systems\/Weather\.js/);
   assert.match(runtime, /G\.adaptive\?\.reset\(\)/);
   assert.match(runtime, /G\.adaptive\?\.startWave\(\)/);
   assert.match(runtime, /G\.adaptive\?\.update\(dt\)/);
