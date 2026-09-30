@@ -199,7 +199,7 @@ G.drawPlayer=G.drawPlayerV9;
 
 G.drawZombieV9=function(z){
   // Reuse the richer V7 silhouettes as the base, then add V9 lighting/readability.
-  if(G.drawZombieV7)G.drawZombieV7(z);
+  if(G.drawZombieV8)G.drawZombieV8(z);
   const ctx=G.ctx,now=performance.now();
   if(z.hp<=0)return;
   const glow={exploder:'#ff6b35',spitter:'#6ff0b5',screamer:'#e87cff',hunter:'#ffd15b',leaper:'#ffcf5a',tank:'#b9c9d0',fast:'#ffd56a'}[z.type];
