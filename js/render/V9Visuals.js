@@ -228,7 +228,9 @@ G.drawPlayerV9=function(){
   if(G.equipmentHas?.('shield')&&p.shield>0){ctx.strokeStyle='rgba(93,220,255,.5)';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(0,1,25+Math.sin(now*.008)*1.5,0,TAU);ctx.stroke();}
   if(p.dashTime>0){ctx.strokeStyle='rgba(105,220,255,.55)';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,25+Math.sin(now*.03)*3,0,TAU);ctx.stroke();}
   ctx.restore();
-};G.drawZombieV9=function(z){
+};
+G.drawPlayer=G.drawPlayerV9;
+G.drawZombieV9=function(z){
   if(z.x<G.camera.x-180||z.x>G.camera.x+G.W+180||z.y<G.camera.y-180||z.y>G.camera.y+G.H+180)return;
   const ctx=G.ctx,now=performance.now(),dead=z.hp<=0,death=dead?clamp(1-(z.deathTimer||0)/520):0;
   const r=Math.max(17,z.r||17),a=Math.atan2(G.player.y-z.y,G.player.x-z.x);
