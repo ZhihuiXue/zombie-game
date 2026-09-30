@@ -79,7 +79,7 @@ G.resetGame=function(){
   G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;
   G.selectedWeapon=1;G.weapons=JSON.parse(JSON.stringify(G.baseWeapons));G.owned={1:true,2:true,3:true,4:false,5:false};
   Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0});
-  G.player.maxMag={1:12,2:30,3:6,4:24,5:5};G.player.mag={1:12,2:30,3:6,4:24,5:5};G.player.reserve={1:Infinity,2:Infinity,3:0,4:0,5:0};G.player.maxReserve={1:Infinity,2:Infinity,3:36,4:96,5:15};G.player.lastFlameFuel=0;G.player.lastFlameSound=0;
+  G.player.hitFlash=0;G.player.dashFx=0;G.damageFlash=0;G.player.maxMag={1:12,2:30,3:6,4:24,5:5};G.player.mag={1:12,2:30,3:6,4:24,5:5};G.player.reserve={1:Infinity,2:Infinity,3:0,4:0,5:0};G.player.maxReserve={1:Infinity,2:Infinity,3:36,4:96,5:15};G.player.lastFlameFuel=0;G.player.lastFlameSound=0;
   if(G.applyDNABonuses)G.applyDNABonuses(); if(G.applyEquipment)G.applyEquipment();
   for(const k in G.player.mag)G.player.mag[k]=G.player.maxMag[k];
   G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.generateWorld?.();G.findSafePlayerSpawn?.();
@@ -147,7 +147,7 @@ G.update=function(dt){
     return;
   }
   if(G.state==='level'||G.state==='intro')return;
-  G.playTime+=dt;G.killSaveTimer+=dt;G.player.recoil=Math.max(0,G.player.recoil-dt);G.player.muzzle=Math.max(0,G.player.muzzle-dt);G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
+  G.playTime+=dt;G.killSaveTimer+=dt;G.player.recoil=Math.max(0,G.player.recoil-dt);G.player.muzzle=Math.max(0,G.player.muzzle-dt);G.player.hitFlash=Math.max(0,(G.player.hitFlash||0)-dt);G.player.dashFx=Math.max(0,(G.player.dashFx||0)-dt);G.damageFlash=Math.max(0,(G.damageFlash||0)-dt);G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
   if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===1||w===2){G.player.mag[w]=G.player.maxMag[w]}else{const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}G.reloadWeapon=0}}
   if(G.keys.has('shift')&&!G.keys._shiftUsed){G.keys._shiftUsed=true;G.dash()}if(!G.keys.has('shift'))G.keys._shiftUsed=false;
   if(G.keys.has(' ')&&!G.keys._spaceUsed){G.keys._spaceUsed=true;G.melee()}if(!G.keys.has(' '))G.keys._spaceUsed=false;
