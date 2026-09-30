@@ -8,7 +8,6 @@ G.fireFlamethrower=function(){
   if(G.player.reserve[4] < 0) G.player.reserve[4]=0;
   if(G.player.mag[4]<=0){G.startReload();return}
   const a=G.aim();
-  G.adaptive?.recordShot(4);
   const now=performance.now();
   const range=285,cone=.32;
 
@@ -17,13 +16,14 @@ G.fireFlamethrower=function(){
   const last=G.player.lastFlameFuel||0;
   if(now-last>=120){
     G.player.lastFlameFuel=now;
+    G.adaptive?.recordShot(4);
     G.player.mag[4]--;
     for(const z of G.spatialGrid.near(G.player.x+Math.cos(a)*170,G.player.y+Math.sin(a)*170,range)){
       if(z.hp<=0)continue;
       const dx=z.x-G.player.x,dy=z.y-G.player.y,d=Math.hypot(dx,dy)||1;
       let da=Math.atan2(dy,dx)-a;da=Math.atan2(Math.sin(da),Math.cos(da));
       if(d<range+z.r&&Math.abs(da)<cone){
-        G.damageZombie(z,w.damage*G.player.damage*1.25);
+        G.damageZombie(z,w.damage*G.player.damage*1.25,{source:4,angle:a,knockback:38});
         z.burnUntil=Math.max(z.burnUntil||0,now+5000*G.player.burnBoost);z.lastDamageSource='fire';
         z.burnTick=0;
         z.stun=Math.max(z.stun||0,55);
