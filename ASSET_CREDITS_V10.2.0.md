@@ -1,7 +1,15 @@
-# V10.2.0 free character assets
+# V10.3.0 Asset Credits
 
-Player: CC0 top-down 8-direction character asset from OpenGameArt.
+## Player
+- **Animated Top Down Survivor Player** — Riley Gombart
+- License: **CC-BY 3.0**
+- Source: https://opengameart.org/content/animated-top-down-survivor-player
+- Used animation: rifle idle / rifle move.
 
-Zombie: CC0 animated top-down zombie asset by Riley Gombart / ChessMasterRiley.
+## Zombie
+- **Animated Top Down Zombie** — Riley Gombart / ChessMasterRiley
+- License: **CC0**
+- Source: https://opengameart.org/content/animated-top-down-zombie
+- Used animation: idle / move.
 
-The zombie asset is CC0, so attribution is not required. Source information is kept here for project transparency.
+The game uses complete PNG animation frames rather than the previous tiny 8-direction RPG sheet.
