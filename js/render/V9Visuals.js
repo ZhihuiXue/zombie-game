@@ -304,7 +304,7 @@ G.drawZombieV9=function(z){
   ctx.restore();
   if(!dead&&z.hp<z.maxHp){const w=r*2.9,yy=z.y-r*1.9;ctx.fillStyle='rgba(7,11,10,.9)';ctx.fillRect(z.x-w/2,yy,w,6);ctx.fillStyle=z.hp<z.maxHp*.3?'#ff4b4b':'#d85a5a';ctx.fillRect(z.x-w/2,yy,w*Math.max(0,z.hp/z.maxHp),6);ctx.strokeStyle='rgba(255,255,255,.16)';ctx.strokeRect(z.x-w/2,yy,w,6);}
   if(!dead&&z.stun>0){ctx.save();ctx.fillStyle='#ffe18a';ctx.font='bold 16px Arial';ctx.textAlign='center';ctx.fillText('✦',z.x,z.y-r*2.05);ctx.restore();}
-};G.drawBulletV9=function(b){
+};G.drawZombie=G.drawZombieV9;G.drawBulletV9=function(b){
   const ctx=G.ctx,s=Math.hypot(b.vx,b.vy)||1;
   const color=b.type==='enemy'?'#ff5d5d':(G.weapons?.[b.type]?.color||'#fff');
   const long=b.type===5?30:b.type===3?17:b.type===2?12:9;

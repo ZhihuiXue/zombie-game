@@ -165,7 +165,7 @@ G.update=function(dt){
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt);
   G.camera.x=Math.max(0,Math.min(G.WORLD.w-G.W,G.player.x-G.W/2));G.camera.y=Math.max(0,Math.min(G.WORLD.h-G.H,G.player.y-G.H/2));
 };
-G.loop=function(ts){const dt=Math.min(40,ts-G.last);G.last=ts;try{G.update(dt);G.draw()}catch(err){console.error('[Zombie Outbreak]',err);G.runtimeError=String(err?.stack||err);if(G.ui?.message){G.ui.message.textContent='⚠️ 游戏运行错误，请刷新页面';G.ui.message.style.opacity=1}}requestAnimationFrame(G.loop)};
+G.loop=function(ts){const dt=Math.min(40,ts-G.last);G.last=ts;try{G.update(dt);G.draw()}catch(err){console.error('[Zombie Outbreak]',err);G.runtimeError=String(err?.stack||err);if(G.ui?.message){G.ui.message.textContent='⚠️ 游戏运行错误：'+(err?.message||'Unknown error');G.ui.message.style.opacity=1}}requestAnimationFrame(G.loop)};
 
 G.renderProfileSummary=function(){const el=G.ui.profileSummary;if(!el)return;const p=G.profiles?.find(x=>x.id===G.activeProfileId);if(!p)return;el.innerHTML=`<b>👤 ${p.name}</b><br><span class="small">🧬 DNA ${G.dna} · 🏆 Best Wave ${p.bestWave||0} · ☠️ Kills ${G.totalKills}</span>`};
 G.toggleProfilePanel=function(){const p=G.ui.profilePanel;if(!p)return;if(p.classList.contains('hidden')){G.renderProfilePanel?.();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden');G.renderProfileSummary?.()}};
