@@ -248,8 +248,7 @@ G.drawV9Lighting=function(){
     const a=G.aim(),lx=px+Math.cos(a)*60,ly=py+Math.sin(a)*60;
     const mg=ctx.createRadialGradient(lx,ly,2,lx,ly,95);
     const c=G.weapons?.[G.selectedWeapon]?.color||'#ffd36b';
-    mg.addColorStop(0,c.replace('#','rgba('));
-    // Keep the flash reliable without depending on color parsing.
+        // Keep the flash reliable without depending on color parsing.
     mg.addColorStop(0,'rgba(255,221,135,.34)');mg.addColorStop(.25,'rgba(255,164,62,.12)');mg.addColorStop(1,'rgba(255,140,40,0)');
     ctx.fillStyle=mg;ctx.fillRect(lx-100,ly-100,200,200);
   }
