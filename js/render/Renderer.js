@@ -141,7 +141,7 @@ G.drawPowerups = function(){for(const p of G.powerups){if(p.x<G.camera.x-40||p.x
 
 G.drawParticles = function(){for(const p of G.particles){if(p.x<G.camera.x-20||p.x>G.camera.x+G.W+20||p.y<G.camera.y-20||p.y>G.camera.y+G.H+20)continue;G.ctx.globalAlpha=Math.max(0,p.life/(p.flame?420:600));G.ctx.fillStyle=p.color;G.ctx.beginPath();G.ctx.arc(p.x,p.y,p.size,0,Math.PI*2);G.ctx.fill()}G.ctx.globalAlpha=1};
 
-G.drawTexts = function(){G.ctx.textAlign='center';G.ctx.font='bold 14px Arial';for(const t of G.texts){if(t.x<G.camera.x-40||t.x>G.camera.x+G.W+40||t.y<G.camera.y-40||t.y>G.camera.y+G.H+40)continue;G.ctx.globalAlpha=Math.max(0,t.life/520);G.ctx.fillStyle=t.color;G.ctx.fillText(t.t,t.x,t.y)}G.ctx.globalAlpha=1};
+G.drawTexts = function(){G.ctx.textAlign='center';G.ctx.font='bold 14px Arial';for(const t of G.texts){if(t.x<G.camera.x-40||t.x>G.camera.x+G.W+40||t.y<G.camera.y-40||t.y>G.camera.y+G.H+40)continue;G.ctx.globalAlpha=Math.max(0,t.life/520);G.ctx.fillStyle=t.color;G.ctx.font=t.critLabel?'bold 16px Arial':'bold 14px Arial';G.ctx.fillText(t.t,t.x,t.y)}G.ctx.globalAlpha=1};
 
 G.drawVignette = function(){if(!G.vignette||G.vignetteW!==G.W||G.vignetteH!==G.H){const c=document.createElement('canvas');c.width=Math.max(1,Math.floor(G.W));c.height=Math.max(1,Math.floor(G.H));const x=c.getContext('2d');const g=x.createRadialGradient(G.W/2,G.H/2,Math.min(G.W,G.H)*.25,G.W/2,G.H/2,Math.max(G.W,G.H)*.7);g.addColorStop(0,'transparent');g.addColorStop(1,'#0009');x.fillStyle=g;x.fillRect(0,0,G.W,G.H);G.vignette=c;G.vignetteW=G.W;G.vignetteH=G.H;}G.ctx.drawImage(G.vignette,0,0)};
 
