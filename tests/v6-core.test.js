@@ -182,3 +182,33 @@ test("V6.0 lifecycle wiring is present in the real source", () => {
   assert.match(player, /G\.drawPlayerV2=function\(\)/);
   assert.match(zombie, /G\.drawZombieV2=function\(z\)/);
 });
+
+
+test("V7 visual systems are wired into character renderers", () => {
+  const player = fs.readFileSync(path.join(ROOT, "js/player/Player.js"), "utf8");
+  const zombie = fs.readFileSync(path.join(ROOT, "js/enemies/Zombie.js"), "utf8");
+  const boss = fs.readFileSync(path.join(ROOT, "js/enemies/Boss.js"), "utf8");
+  const renderer = fs.readFileSync(path.join(ROOT, "js/render/Renderer.js"), "utf8");
+
+  assert.match(player, /G\.getPlayerPose8=function\(\)/);
+  assert.match(player, /G\.playerAnimState=function\(\)/);
+  assert.match(player, /state==='hurt'/);
+  assert.match(player, /state==='walk'/);
+  assert.match(player, /state==='death'/);
+
+  assert.match(zombie, /z\.deathTimer=520/);
+  assert.match(zombie, /if\(z\.hp<=0\)\{if\(z\.deathTimer>0\)z\.deathTimer-=dt;continue;\}/);
+  assert.match(zombie, /z\.hp>0\|\|z\.deathTimer>0/);
+  assert.match(zombie, /G\.drawZombieV7=function\(z\)/);
+  for (const type of ["tank","hunter","spitter","exploder","leaper","screamer","fast"]) {
+    assert.match(zombie, new RegExp("z\\.type==='" + type + "'"));
+  }
+
+  assert.match(boss, /G\.drawBoss=function\(\)/);
+  assert.match(boss, /Chest reactor/);
+  assert.match(boss, /wind/);
+  assert.match(renderer, /G\.drawDynamicLighting=function\(\)/);
+  assert.match(renderer, /muzzle light/);
+  assert.match(renderer, /Flamethrower heat spill/);
+  assert.match(renderer, /Boss core light/);
+});
