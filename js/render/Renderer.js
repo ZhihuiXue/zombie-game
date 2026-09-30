@@ -8,7 +8,15 @@ G.drawWorld=function(){
  G.ctx.drawImage(G.worldCache,0,0);
 };
 
-G.drawFlameCone=function(){const a=G.aim();G.ctx.save();G.ctx.globalAlpha=.18;G.ctx.fillStyle='#ff9d2e';G.ctx.beginPath();G.ctx.moveTo(G.player.x,G.player.y);G.ctx.arc(G.player.x,G.player.y,330,a-.43,a+.43);G.ctx.closePath();G.ctx.fill();G.ctx.globalAlpha=.08;G.ctx.fillStyle='#ffe26a';G.ctx.beginPath();G.ctx.arc(G.player.x,G.player.y,240,a-.30,a+.30);G.ctx.lineTo(G.player.x,G.player.y);G.ctx.closePath();G.ctx.fill();G.ctx.restore()};
+G.drawFlameCone=function(){
+  const a=G.aim(),now=performance.now();G.ctx.save();G.ctx.lineCap='round';
+  // Outer heat cone
+  G.ctx.globalAlpha=.12;G.ctx.fillStyle='#ff5a18';G.ctx.beginPath();G.ctx.moveTo(G.player.x,G.player.y);G.ctx.arc(G.player.x,G.player.y,345,a-.48,a+.48);G.ctx.closePath();G.ctx.fill();
+  G.ctx.globalAlpha=.18;G.ctx.fillStyle='#ff9d2e';G.ctx.beginPath();G.ctx.moveTo(G.player.x,G.player.y);G.ctx.arc(G.player.x,G.player.y,285,a-.34,a+.34);G.ctx.closePath();G.ctx.fill();
+  // Animated flame tongues
+  for(let i=0;i<9;i++){const t=i/8;const ang=a+Math.sin(now*.012+i*2.7)*.055+(Math.random()-.5)*.035;const len=55+t*230;const sx=G.player.x+Math.cos(a)*24,sy=G.player.y+Math.sin(a)*24;const ex=sx+Math.cos(ang)*len,ey=sy+Math.sin(ang)*len;G.ctx.globalAlpha=.34*(1-t*.55);G.ctx.strokeStyle=i%3===0?'#fff1a0':i%2?'#ffb52e':'#ff6b18';G.ctx.lineWidth=7-t*4;G.ctx.beginPath();G.ctx.moveTo(sx,sy);G.ctx.quadraticCurveTo((sx+ex)/2+Math.sin(now*.01+i)*18,(sy+ey)/2-Math.cos(now*.01+i)*18,ex,ey);G.ctx.stroke();}
+  G.ctx.restore();
+};
 
 G.drawPlayer = function(){const a=G.aim(),moving=G.keys.has('w')||G.keys.has('a')||G.keys.has('s')||G.keys.has('d')||G.keys.has('arrowup')||G.keys.has('arrowdown')||G.keys.has('arrowleft')||G.keys.has('arrowright'),t=performance.now()/100;G.ctx.save();G.ctx.translate(G.player.x,G.player.y);G.ctx.rotate(a);G.ctx.globalAlpha=G.invuln>0&&Math.floor(G.invuln/70)%2===0?.45:1;G.ctx.fillStyle='#0008';G.ctx.beginPath();G.ctx.ellipse(0,18,20,8,0,0,Math.PI*2);G.ctx.fill();let leg=Math.sin(t*2.4)*(moving?6:1);G.ctx.strokeStyle='#18232a';G.ctx.lineWidth=7;G.ctx.lineCap='round';G.ctx.beginPath();G.ctx.moveTo(-7,8);G.ctx.lineTo(-8+leg,23);G.ctx.moveTo(7,8);G.ctx.lineTo(8-leg,23);G.ctx.stroke();G.ctx.fillStyle='#536a82';G.ctx.fillRect(-11,-4,22,19);G.ctx.fillStyle='#e2b08b';G.ctx.beginPath();G.ctx.arc(0,-16,10,0,Math.PI*2);G.ctx.fill();G.ctx.fillStyle='#3a2c28';G.ctx.beginPath();G.ctx.arc(0,-20,10,Math.PI,Math.PI*2);G.ctx.fill();G.ctx.strokeStyle='#e2b08b';G.ctx.lineWidth=5;G.ctx.beginPath();G.ctx.moveTo(6,-1);G.ctx.lineTo(17,4);G.ctx.stroke();G.ctx.fillStyle='#252a2b';const gunRecoil=G.player.recoil;G.ctx.fillRect(14-gunRecoil,1,30,6);G.ctx.fillStyle='#d4d9d5';G.ctx.fillRect(40-gunRecoil,1,7,6);if(G.player.muzzle>0){G.ctx.globalAlpha=G.player.muzzle/90;G.ctx.fillStyle=G.weapons[G.selectedWeapon]?.color||'#ffd36b';G.ctx.beginPath();G.ctx.arc(50-gunRecoil,4,8+Math.random()*5,0,Math.PI*2);G.ctx.fill();G.ctx.globalAlpha=1}G.ctx.restore();if(G.attackTimer>250){G.ctx.save();G.ctx.translate(G.player.x,G.player.y);G.ctx.rotate(a);G.ctx.strokeStyle='#f6e2a4';G.ctx.lineWidth=6;G.ctx.beginPath();G.ctx.arc(20,0,65,-.8,.8);G.ctx.stroke();G.ctx.restore()}};
 

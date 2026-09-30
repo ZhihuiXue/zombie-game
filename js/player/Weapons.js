@@ -5,15 +5,47 @@ G.startReload = function(){if(G.state!=='playing'||G.reloadTimer>0)return;const 
 
 G.fireFlamethrower=function(){
   const w=G.weapons[4];
+  if(G.player.reserve[4] < 0) G.player.reserve[4]=0;
   if(G.player.mag[4]<=0){G.startReload();return}
-  const a=G.aim();G.player.mag[4]--;G.fireTimer=w.rate/G.player.fireRate;G.player.recoil=Math.min(6,3.2);G.player.muzzle=100;G.shake=Math.max(G.shake,1.5);
-  const range=330,cone=.43;
-  for(const z of G.spatialGrid.near(G.player.x+Math.cos(a)*165,G.player.y+Math.sin(a)*165,range)){
-    if(z.hp<=0)continue;const dx=z.x-G.player.x,dy=z.y-G.player.y,d=Math.hypot(dx,dy)||1;let da=Math.atan2(dy,dx)-a;da=Math.atan2(Math.sin(da),Math.cos(da));
-    if(d<range+z.r&&Math.abs(da)<cone){G.damageZombie(z,w.damage*G.player.damage*1.15);z.burnUntil=performance.now()+5000*G.player.burnBoost;z.burnTick=0;z.stun=Math.max(z.stun||0,35)}
+  const a=G.aim();
+  const now=performance.now();
+  const range=340,cone=.46;
+
+  // The flamethrower is a continuous stream: hold the mouse to keep spraying.
+  // Fuel is consumed at a steady rate instead of behaving like ordinary bullets.
+  G.player.flameTick=(G.player.flameTick||0)-w.rate;
+  if(G.player.flameTick<=0){
+    G.player.flameTick=120;
+    G.player.mag[4]--;
+    for(const z of G.spatialGrid.near(G.player.x+Math.cos(a)*170,G.player.y+Math.sin(a)*170,range)){
+      if(z.hp<=0)continue;
+      const dx=z.x-G.player.x,dy=z.y-G.player.y,d=Math.hypot(dx,dy)||1;
+      let da=Math.atan2(dy,dx)-a;da=Math.atan2(Math.sin(da),Math.cos(da));
+      if(d<range+z.r&&Math.abs(da)<cone){
+        G.damageZombie(z,w.damage*G.player.damage*1.25);
+        z.burnUntil=Math.max(z.burnUntil||0,now+5000*G.player.burnBoost);
+        z.burnTick=0;
+        z.stun=Math.max(z.stun||0,55);
+      }
+    }
   }
-  for(let i=0;i<10;i++){const ang=a+(Math.random()-.5)*cone*1.8,dist=30+Math.random()*280;G.particles.push({x:G.player.x+Math.cos(ang)*dist,y:G.player.y+Math.sin(ang)*dist,vx:Math.cos(ang)*(80+Math.random()*130),vy:Math.sin(ang)*(80+Math.random()*130),life:220+Math.random()*280,color:Math.random()<.5?'#ff9a2e':'#ffe36e',size:3+Math.random()*5,flame:true})}
-  if(G.player.mag[4]===0)G.startReload();G.playSound('flame');
+
+  // Dense flame particles make the stream visually obvious.
+  for(let i=0;i<5;i++){
+    const ang=a+(Math.random()-.5)*cone*1.9;
+    const dist=24+Math.random()*250;
+    const speed=90+Math.random()*180;
+    G.particles.push({
+      x:G.player.x+Math.cos(ang)*dist*.22, y:G.player.y+Math.sin(ang)*dist*.22,
+      vx:Math.cos(ang)*speed, vy:Math.sin(ang)*speed,
+      life:180+Math.random()*260,
+      color:Math.random()<.55?'#ff7a18':Math.random()<.7?'#ffbd35':'#fff0a0',
+      size:4+Math.random()*7, flame:true
+    });
+  }
+  G.player.recoil=Math.min(5,2.8);G.player.muzzle=90;G.shake=Math.max(G.shake,1.2);
+  if(G.player.mag[4]<=0)G.startReload();
+  if(now-(G.player.lastFlameSound||0)>180){G.player.lastFlameSound=now;G.playSound('flame');}
 };
 G.shoot=function(){
 if(G.state!=='playing'||G.reloadTimer>0)return;
