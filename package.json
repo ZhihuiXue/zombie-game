@@ -1,0 +1,8 @@
+{
+  "name": "zombie-game",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test tests"
+  }
+}
