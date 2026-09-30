@@ -17,7 +17,7 @@ const items=[
 ...(G.owned[4]?[['flameAmmo','🔥 喷火枪燃料','+24 发',40,()=>G.player.reserve[4]=Math.min(G.player.maxReserve[4],G.player.reserve[4]+24)]]:[]),
 ['heal','🩹 医疗包','回复 40 HP',75,()=>G.player.hp=Math.min(G.player.maxHp,G.player.hp+40)],...equipItems,...evoItems
 ];
-G.ui.shopGrid.innerHTML='<div class="shopSectionTitle">🧩 装备（本局 Build）</div>';
+G.ui.shopGrid.innerHTML='<div class="shopSectionTitle">🧩 装备（本局 Build）</div><div class="small" style="grid-column:1/-1;text-align:left">装备通过达到指定 Wave 永久解锁；解锁后可在商店随机出现。</div>'; 
 for(const [id,n,d,c,fn] of items){
  const ownedAlready=(id==='flame'&&G.owned[4])||(id==='sniper'&&G.owned[5]);
  const locked=(id==='flameAmmo'&&!G.owned[4]);

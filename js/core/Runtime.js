@@ -22,7 +22,7 @@ G.ui = {
   shopTimer:document.getElementById("shopTimer"), shopGrid:document.getElementById("shopGrid"),
   startNext:document.getElementById("startNext"), gameOverPanel:document.getElementById("gameOverPanel"),
   gameOverStats:document.getElementById("gameOverStats"), menuPanel:document.getElementById("menuPanel"),
-  soundBtn:document.getElementById("soundBtn"),buildPanel:document.getElementById("buildPanel"),buildText:document.getElementById("buildText"),buildGrid:document.getElementById("buildGrid"),achievementPanel:document.getElementById("achievementPanel"),achievementGrid:document.getElementById("achievementGrid")
+  soundBtn:document.getElementById("soundBtn"),equipmentPanel:document.getElementById("equipmentPanel"),equipmentGrid:document.getElementById("equipmentGrid"),codexPanel:document.getElementById("codexPanel"),codexGrid:document.getElementById("codexGrid"),controlsPanel:document.getElementById("controlsPanel"),controlsGrid:document.getElementById("controlsGrid"),buildPanel:document.getElementById("buildPanel"),buildText:document.getElementById("buildText"),buildGrid:document.getElementById("buildGrid"),achievementPanel:document.getElementById("achievementPanel"),achievementGrid:document.getElementById("achievementGrid")
 };
 
 G.WORLD = {w:2600,h:1800};
@@ -73,9 +73,10 @@ G.resetGame=function(){
 
 G.startWave=function(){
   if(G.state!=='playing')return;
+  G.recordEquipmentUnlocks?.(G.wave);
   G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.makeMap();if(G.blocked(G.player.x,G.player.y,G.player.r+4)){G.player.x=G.WORLD.w/2;G.player.y=G.WORLD.h/2;}G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
-  if(G.shouldShowEnemyIntro&&G.shouldShowEnemyIntro(G.wave))G.showEnemyIntro(G.wave,begin);else begin();
+  begin();
 };
 G.startShop=function(){G.state='shop';G.shopUntil=Infinity;G.ui.shopPanel.classList.remove('hidden');G.ui.shopTimer.textContent='准备完成后，点击“开始下一波”继续';G.renderShop()};
 G.startNextWave=function(){
@@ -155,3 +156,19 @@ G.renderBuildPanel=function(){if(!G.ui.buildPanel)return;G.ui.buildText.textCont
 
 G.toggleAchievementPanel=function(){const p=G.ui.achievementPanel;if(p.classList.contains('hidden')){G.renderAchievementPanel();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
 G.renderAchievementPanel=function(){if(!G.ui.achievementGrid)return;G.ui.achievementGrid.innerHTML='';for(const [id,a] of Object.entries(G.achievements||{})){const done=!!G.achState?.[id];const el=document.createElement('div');el.className='shopItem'+(done?'':' disabled');el.innerHTML='<b>'+(done?'🏆 ':'🔒 ')+a[0]+'</b><br><span class="small">'+a[1]+'</span><br><strong>'+(done?'已解锁 · +25 DNA':'未解锁')+'</strong>';G.ui.achievementGrid.appendChild(el)}};
+
+G.toggleEquipmentPanel=function(){const p=G.ui.equipmentPanel;if(p.classList.contains('hidden')){G.renderEquipmentPanel?.();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
+G.zombieCodex=[
+ ['normal','🧟','Walker','普通感染者','100','★★','★★','无','缓慢追踪玩家。'],
+ ['fast','⚡','Runner','奔跑者','75','★★★★★','★★★','高速追踪','速度快，优先处理。'],
+ ['tank','🛡️','Tank','重装僵尸','300','★','★★★★★','高生命/高伤害','移动缓慢但非常耐打。'],
+ ['exploder','💥','Exploder','爆炸僵尸','95','★★★','★★★★','死亡爆炸','靠近玩家后会造成范围伤害。'],
+ ['spitter','🫧','Spitter','喷吐者','120','★★','★★★','远程酸液','保持距离并向玩家发射酸液。'],
+ ['hunter','🏹','Hunter','猎杀者','115','★★★★','★★★','侧向移动','会绕侧面接近玩家。'],
+ ['leaper','🦘','Leaper','跳跃者','130','★★★★','★★★★','锁定跳跃','锁定玩家位置后快速扑击。'],
+ ['screamer','📣','Screamer','尖叫者','90','★★','★','强化同伴','保持后方并强化附近僵尸。']
+];
+G.renderCodex=function(){const g=G.ui.codexGrid;if(!g)return;g.innerHTML='';for(const z of G.zombieCodex){const el=document.createElement('div');el.className='codexCard';const cv=document.createElement('canvas');cv.className='codexPortrait';cv.width=150;cv.height=110;const c=cv.getContext('2d');const cx=75,cy=57;const colors={normal:'#668f6b',fast:'#d2a044',tank:'#53616b',exploder:'#bf6b35',spitter:'#4c9b85',hunter:'#9c5a9a',leaper:'#b58a42',screamer:'#a44ca8'};c.fillStyle='#07100c';c.fillRect(0,0,150,110);c.fillStyle='#0008';c.beginPath();c.ellipse(cx,88,31,8,0,0,Math.PI*2);c.fill();const r=z[0]==='tank'?27:22;c.fillStyle=colors[z[0]];c.fillRect(cx-r*.65,cy-r*.15,r*1.3,r*1.15);c.fillStyle='#7c9b78';c.beginPath();c.arc(cx,cy-r*.62,r*.62,0,Math.PI*2);c.fill();c.fillStyle='#382d25';c.beginPath();c.arc(cx,cy-r*.86,r*.58,Math.PI,Math.PI*2);c.fill();c.fillStyle='#e33';c.beginPath();c.arc(cx-r*.22,cy-r*.68,2.8,0,Math.PI*2);c.arc(cx+r*.22,cy-r*.68,2.8,0,Math.PI*2);c.fill();c.strokeStyle='#7c9b78';c.lineWidth=5;c.beginPath();c.moveTo(cx-r*.55,cy);c.lineTo(cx-r*.95,cy+12);c.moveTo(cx+r*.55,cy);c.lineTo(cx+r*.95,cy+12);c.stroke();if(z[0]==='tank'){c.strokeStyle='#98a7b2';c.lineWidth=5;c.strokeRect(cx-r*.7,cy-r*.05,r*1.4,r*.85)}if(z[0]==='spitter'){c.fillStyle='#65e5a5';c.beginPath();c.arc(cx,cy-r*.2,6,0,Math.PI*2);c.fill()}if(z[0]==='leaper'){c.strokeStyle='#f3c75f';c.setLineDash([4,4]);c.beginPath();c.arc(cx,cy,r+6,0,Math.PI*2);c.stroke();c.setLineDash([])}if(z[0]==='exploder'){c.strokeStyle='#ff7438';c.lineWidth=3;c.beginPath();c.arc(cx,cy,r+7,0,Math.PI*2);c.stroke()}if(z[0]==='screamer'){c.strokeStyle='#e889ff';c.lineWidth=3;c.beginPath();c.arc(cx,cy-r*.2,7,0,Math.PI*2);c.stroke();c.beginPath();c.arc(cx,cy-r*.2,13,0,Math.PI*2);c.stroke()}el.appendChild(cv);const info=document.createElement('div');info.innerHTML=`<b>${z[2]}</b> · ${z[3]}<div class="codexStats">❤️ HP ${z[4]}<br>⚡ 速度 ${z[5]}<br>⚔️ 威胁 ${z[6]}<br>✨ ${z[7]}</div><div class="small" style="margin-top:6px">${z[8]}</div>`;el.appendChild(info);g.appendChild(el)}};
+G.renderControls=function(){const g=G.ui.controlsGrid;if(!g)return;const rows=[['W A S D / 方向键','移动'],['鼠标移动','瞄准'],['鼠标左键','射击 / 按住喷火'],['SPACE','近战'],['SHIFT','Dash / 短暂无敌'],['G','投掷手雷'],['Q','冲击波'],['E','紧急治疗'],['1 - 5','切换武器']];g.innerHTML='';for(const r of rows){const el=document.createElement('div');el.className='controlCard';el.innerHTML=`<span class="controlKey">${r[0]}</span><b>${r[1]}</b>`;g.appendChild(el)}};
+G.toggleCodexPanel=function(){const p=G.ui.codexPanel;if(p.classList.contains('hidden')){G.renderCodex();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
+G.toggleControlsPanel=function(){const p=G.ui.controlsPanel;if(p.classList.contains('hidden')){G.renderControls();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};

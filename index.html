@@ -18,6 +18,9 @@
   <div class="panel right"><div id="weaponText"></div><div id="ammoText"></div><div id="dashText"></div><div id="grenadeText"></div></div>
   <div id="message" class="panel msg"></div>
   <div id="achievement" class="panel achievement"></div>
+  <div id="equipmentPanel" class="panel center hidden"><h2>🛡 装备图鉴</h2><div class="subtitle">达到指定 Wave 后永久解锁；装备在本局商店中获得</div><div id="equipmentGrid" class="shopGrid"></div><div class="buttons"><button class="btn" id="equipmentBack">返回主菜单</button></div></div>
+  <div id="codexPanel" class="panel center hidden"><h2>🧟 僵尸图鉴</h2><div id="codexGrid" class="codexGrid"></div><div class="buttons"><button class="btn" id="codexBack">返回主菜单</button></div></div>
+  <div id="controlsPanel" class="panel center hidden"><h2>🎮 操作说明</h2><div id="controlsGrid" class="controlsGrid"></div><div class="buttons"><button class="btn" id="controlsBack">返回主菜单</button></div></div>
   <div id="achievementPanel" class="panel center hidden"><h2>🏆 成就</h2><div id="achievementGrid" class="shopGrid"></div><div class="buttons"><button class="btn" id="achievementBack">返回主菜单</button></div></div>
   <div id="buildPanel" class="panel center hidden"><h2>🧩 当前 Build</h2><div id="buildText" class="subtitle"></div><div id="buildGrid" class="shopGrid"></div><div class="buttons"><button class="btn" id="buildBack">返回主菜单</button></div></div>
   <div id="dnaPanel" class="panel center hidden"><h2>🧬 DNA 永久强化</h2><div id="dnaText" class="subtitle"></div><div id="dnaGrid" class="shopGrid"></div><div class="buttons"><button class="btn" id="dnaBack">返回主菜单</button></div></div>
@@ -25,7 +28,7 @@
   <div id="levelPanel" class="panel center hidden"><h2>⬆️ LEVEL UP</h2><div class="subtitle">选择一个强化</div><div id="levelCards" class="cardrow"></div></div>
   <div id="shopPanel" class="panel center hidden"><h2>🛒 WAVE SHOP</h2><div id="shopTimer" class="subtitle">准备完成后，点击“开始下一波”继续</div><div class="small">本局装备 / 武器进化 / 弹药 / 医疗</div><div id="shopGrid" class="shopGrid"></div><div class="buttons"><button class="btn" id="startNext">开始下一波</button></div></div>
   <div id="gameOverPanel" class="panel center hidden"><h1 class="title">☠️ GAME OVER</h1><div id="gameOverStats" class="subtitle"></div><div class="buttons"><button class="btn" id="restartBtn">🔄 重新开始</button><button class="btn" id="endlessBtn">♾️ Endless Mode</button></div><div class="small" style="margin-top:12px">永久 DNA 会保留到下一局</div></div>
-  <div id="menuPanel" class="panel center hidden"><h1 class="title">🧟 Zombie Outbreak V4.0</h1><div class="subtitle">Wave 生存 · 武器 Build · Boss · 优化版</div><div class="buttons"><button class="btn" id="startBtn">▶ 开始游戏</button><button class="btn" id="dnaBtn">🧬 DNA</button><button class="btn" id="buildBtn">🧩 Build</button><button class="btn" id="achievementBtn">🏆 成就</button></div><div class="small" style="margin-top:14px">WASD 移动 · 鼠标瞄准/射击 · Space 近战 · Shift 冲刺 · G 手雷 · Q 冲击波 · E 治疗 · 1-5 切枪</div></div>
+  <div id="menuPanel" class="panel center hidden"><h1 class="title">🧟 Zombie Outbreak V4.0</h1><div class="subtitle">Wave 生存 · 武器 Build · Boss · 优化版</div><div class="buttons"><button class="btn" id="startBtn">▶ 开始游戏</button><button class="btn" id="dnaBtn">🧬 DNA</button><button class="btn" id="buildBtn">🧩 Build</button><button class="btn" id="codexBtn">🧟 僵尸图鉴</button><button class="btn" id="controlsBtn">🎮 操作说明</button><button class="btn" id="equipmentBtn">🛡 装备</button><button class="btn" id="achievementBtn">🏆 成就</button></div><div class="small" style="margin-top:14px">WASD 移动 · 鼠标瞄准/射击 · Space 近战 · Shift 冲刺 · G 手雷 · Q 冲击波 · E 治疗 · 1-5 切枪</div></div>
 </div>
 <script type="module" src="./js/main.js"></script>
 </body>

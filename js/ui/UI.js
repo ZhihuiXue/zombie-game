@@ -1,6 +1,12 @@
 import "../core/Runtime.js";
 const G=globalThis;
 
+document.getElementById("equipmentBtn").onclick=()=>G.toggleEquipmentPanel();
+document.getElementById("equipmentBack").onclick=()=>G.toggleEquipmentPanel();
+document.getElementById("codexBtn").onclick=()=>G.toggleCodexPanel();
+document.getElementById("codexBack").onclick=()=>G.toggleCodexPanel();
+document.getElementById("controlsBtn").onclick=()=>G.toggleControlsPanel();
+document.getElementById("controlsBack").onclick=()=>G.toggleControlsPanel();
 document.getElementById("dnaBtn").onclick=()=>G.toggleDNAPanel();
 document.getElementById("buildBtn").onclick=()=>G.toggleBuildPanel();
 document.getElementById("achievementBtn").onclick=()=>G.toggleAchievementPanel();
