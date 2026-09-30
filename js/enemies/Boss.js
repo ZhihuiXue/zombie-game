@@ -1,0 +1,7 @@
+// Auto-split from Zombie Outbreak V3.1. Gameplay intentionally unchanged in this refactor.
+const G = globalThis;
+
+G.spawnBoss = function(){if(G.boss||G.state!=='playing')return;const p=G.spawnPoint();G.boss={x:p.x,y:p.y,r:58,hp:900+G.wave*180,maxHp:900+G.wave*180,attack:0,shoot:0,phase:1,flash:0};G.showMessage('👑 BOSS INCOMING!',2200);G.playSound('boss')};
+
+G.updateBoss = function(dt){if(!G.boss)return;if(G.boss.hp<=0){G.score+=2000;G.coins+=250;G.gainXP(200);G.showMessage('👑 BOSS DEFEATED +$250',2200);for(let i=0;i<30;i++)G.particles.push({x:G.boss.x,y:G.boss.y,vx:(Math.random()-.5)*300,vy:(Math.random()-.5)*300,life:900,color:'#ffcc45',size:3+Math.random()*4});G.boss=null;return}G.boss.phase=G.boss.hp<G.boss.maxHp*.33?3:G.boss.hp<G.boss.maxHp*.66?2:1;const d=Math.hypot(G.player.x-G.boss.x,G.player.y-G.boss.y)||1;const a=Math.atan2(G.player.y-G.boss.y,G.player.x-G.boss.x);G.boss.attack-=dt;G.boss.shoot-=dt;if(d>115)G.moveEntity(G.boss,Math.cos(a)*(45+G.boss.phase*20),Math.sin(a)*(45+G.boss.phase*20),dt/1000);if(d<G.boss.r+G.player.r+12&&G.boss.attack<=0){G.damagePlayer(18+G.boss.phase*4);G.boss.attack=700}if(G.boss.shoot<=0){G.boss.shoot=G.boss.phase===3?700:1200;for(let i=0;i<G.boss.phase;i++){const aa=a+(i-(G.boss.phase-1)/2)*.18;G.bullets.push({x:G.boss.x,y:G.boss.y,vx:Math.cos(aa)*360,vy:Math.sin(aa)*360,life:1800,damage:14+G.boss.phase*4,type:'enemy',pierce:1,hit:new Set()})}if(G.boss.phase>=2){G.spawnRandomZombie();G.spawnRandomZombie()}}};
+
