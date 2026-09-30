@@ -194,7 +194,7 @@ test("V7 visual systems are wired into character renderers", () => {
   assert.match(player, /G\.playerAnimState=function\(\)/);
   assert.match(player, /state==='hurt'/);
   assert.match(player, /state==='walk'/);
-  assert.match(player, /state==='death'/);
+  assert.match(player, /return 'death'/);
 
   assert.match(zombie, /z\.deathTimer=520/);
   assert.match(zombie, /if\(z\.hp<=0\)\{if\(z\.deathTimer>0\)z\.deathTimer-=dt;continue;\}/);
