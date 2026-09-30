@@ -168,12 +168,37 @@ G.drawZombieV2=function(z){
 
   const lean=z.type==='fast'?.13:z.type==='hunter'?.17:z.type==='leaper'?-.08:0;ctx.rotate(lean);
 
-  // Legs are now chunky shapes rather than strokes.
-  const lg=ctx.createLinearGradient(-r,0,r,r*1.2);lg.addColorStop(0,'#38413e');lg.addColorStop(1,'#171c1b');
-  ctx.fillStyle=lg;
-  ctx.beginPath();ctx.moveTo(-r*.48,r*.36);ctx.lineTo(-r*.05,r*.48);ctx.lineTo(-r*.20+step,r*.98);ctx.lineTo(-r*.50+step,r*1.25);ctx.lineTo(-r*.82+step,r*1.2);ctx.lineTo(-r*.58+step,r*.78);ctx.closePath();
-  ctx.moveTo(r*.05,r*.48);ctx.lineTo(r*.48,r*.36);ctx.lineTo(r*.58-step,r*.78);ctx.lineTo(r*.82-step,r*1.2);ctx.lineTo(r*.50-step,r*1.25);ctx.lineTo(r*.20-step,r*.98);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#141817';ctx.beginPath();ctx.ellipse(-r*.65+step,r*1.28,r*.30,r*.12,-.1,0,Math.PI*2);ctx.ellipse(r*.65-step,r*1.28,r*.30,r*.12,.1,0,Math.PI*2);ctx.fill();
+  // Legs: clearly separated from the torso, with knees, shins and boots.
+  // Draw them first so the torso overlaps only at the hips.
+  const legTop=wide?torsoW*.34:torsoW*.28;
+  const kneeY=r*.72, ankleY=r*1.23;
+  const legGrad=ctx.createLinearGradient(-r*.7,r*.4,r*.7,ankleY);
+  legGrad.addColorStop(0,'#4a514d');legGrad.addColorStop(.55,'#2d3532');legGrad.addColorStop(1,'#151a19');
+  ctx.fillStyle=legGrad;
+  ctx.beginPath();
+  ctx.moveTo(-legTop,r*.48);ctx.lineTo(-r*.08,r*.50);ctx.lineTo(-r*.13+step,kneeY);
+  ctx.lineTo(-r*.34+step,ankleY);ctx.lineTo(-r*.72+step,ankleY);
+  ctx.lineTo(-r*.54+step,kneeY);ctx.closePath();
+  ctx.moveTo(r*.08,r*.50);ctx.lineTo(r*legTop/r,r*.48);ctx.lineTo(r*.54-step,kneeY);
+  ctx.lineTo(r*.72-step,ankleY);ctx.lineTo(r*.34-step,ankleY);
+  ctx.lineTo(r*.13-step,kneeY);ctx.closePath();ctx.fill();
+  // Knee caps catch light and make the two legs read separately.
+  ctx.fillStyle='rgba(145,160,150,.24)';
+  ctx.beginPath();ctx.ellipse(-r*.30+step,kneeY,r*.17,r*.13,0,0,Math.PI*2);
+  ctx.ellipse(r*.30-step,kneeY,r*.17,r*.13,0,0,Math.PI*2);ctx.fill();
+  // Torn cuffs / shins.
+  ctx.strokeStyle='rgba(10,14,13,.8)';ctx.lineWidth=Math.max(2,r*.07);
+  ctx.beginPath();ctx.moveTo(-r*.42+step,ankleY-.08*r);ctx.lineTo(-r*.72+step,ankleY);
+  ctx.moveTo(r*.42-step,ankleY-.08*r);ctx.lineTo(r*.72-step,ankleY);ctx.stroke();
+  // Heavy boots with toe direction following the step.
+  const bootG=ctx.createLinearGradient(-r,ankleY,r,ankleY+r*.18);
+  bootG.addColorStop(0,'#313936');bootG.addColorStop(1,'#101514');ctx.fillStyle=bootG;
+  ctx.beginPath();
+  ctx.ellipse(-r*.72+step,ankleY+r*.06,r*.36,r*.15,-.10,0,Math.PI*2);
+  ctx.ellipse(r*.72-step,ankleY+r*.06,r*.36,r*.15,.10,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(210,225,215,.20)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(-r*.92+step,ankleY+.04*r);ctx.lineTo(-r*.57+step,ankleY+.04*r);
+  ctx.moveTo(r*.57-step,ankleY+.04*r);ctx.lineTo(r*.92-step,ankleY+.04*r);ctx.stroke();
 
   // Type silhouette modifiers.
   const wide=z.type==='tank',thin=z.type==='hunter'||z.type==='fast';
