@@ -83,11 +83,11 @@ G.drawZombieV8=function(z){
     ctx.save();
     ctx.fillStyle="rgba(0,0,0,.40)";
     ctx.beginPath();ctx.ellipse(z.x,z.y+z.r*1.12,z.r*1.05,z.r*.28,0,0,Math.PI*2);ctx.fill();
-    drawSprite(ctx,img,z.x,z.y-r*.04-bob,w,h,flip,z.flash>0?.72:1);
+    drawSprite(ctx,img,z.x,z.y-z.r*.04-bob,w,h,flip,z.flash>0?.72:1);
     if(z.type!=="normal"&&z.type!=="tank"){
       const hues={fast:25,exploder:350,hunter:275,spitter:145,leaper:42,screamer:300};
       ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.13;ctx.filter=`hue-rotate(${hues[z.type]||0}deg)`;
-      drawSprite(ctx,img,z.x,z.y-r*.04-bob,w,h,flip,1);ctx.restore();
+      drawSprite(ctx,img,z.x,z.y-z.r*.04-bob,w,h,flip,1);ctx.restore();
     }
     if(z.burnUntil>now){
       ctx.strokeStyle="rgba(255,112,38,.65)";ctx.lineWidth=2;
