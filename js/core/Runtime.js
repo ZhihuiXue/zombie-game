@@ -22,7 +22,7 @@ G.ui = {
   shopTimer:document.getElementById("shopTimer"), shopGrid:document.getElementById("shopGrid"),
   startNext:document.getElementById("startNext"), gameOverPanel:document.getElementById("gameOverPanel"),
   gameOverStats:document.getElementById("gameOverStats"), menuPanel:document.getElementById("menuPanel"),
-  soundBtn:document.getElementById("soundBtn"),equipmentPanel:document.getElementById("equipmentPanel"),equipmentGrid:document.getElementById("equipmentGrid"),codexPanel:document.getElementById("codexPanel"),codexGrid:document.getElementById("codexGrid"),controlsPanel:document.getElementById("controlsPanel"),controlsGrid:document.getElementById("controlsGrid"),buildPanel:document.getElementById("buildPanel"),buildText:document.getElementById("buildText"),buildGrid:document.getElementById("buildGrid"),achievementPanel:document.getElementById("achievementPanel"),achievementGrid:document.getElementById("achievementGrid")
+  soundBtn:document.getElementById("soundBtn"),profilePanel:document.getElementById("profilePanel"),profileGrid:document.getElementById("profileGrid"),profileSummary:document.getElementById("profileSummary"),profileNameInput:document.getElementById("profileNameInput"),equipmentPanel:document.getElementById("equipmentPanel"),equipmentGrid:document.getElementById("equipmentGrid"),codexPanel:document.getElementById("codexPanel"),codexGrid:document.getElementById("codexGrid"),controlsPanel:document.getElementById("controlsPanel"),controlsGrid:document.getElementById("controlsGrid"),buildPanel:document.getElementById("buildPanel"),buildText:document.getElementById("buildText"),buildGrid:document.getElementById("buildGrid"),achievementPanel:document.getElementById("achievementPanel"),achievementGrid:document.getElementById("achievementGrid")
 };
 
 G.WORLD = {w:2600,h:1800};
@@ -35,7 +35,7 @@ G.particles=[]; G.bullets=[]; G.zombies=[]; G.drops=[]; G.texts=[]; G.walls=[]; 
 G.dashTimer=0; G.attackTimer=0; G.reloadTimer=0; G.fireTimer=0; G.invuln=0; G.playTime=0; G.phase=1; G.achievementTimer=0;
 G.audioCtx=null; G.masterGain=null; G.soundOn=true; G.reloadWeapon=0;
 G.introDismissed=JSON.parse(localStorage.getItem('zo_intro_dismissed')||'{}');G.introAfter=null;G.dnaLevels=G.dnaLevels||{};
-G.uiTick=0; G.uiInterval=100; G.mapTheme='meadow'; G.currentEvent=null; G.eventUntil=0; G.combo=0; G.comboTimer=0; G.weaponXP=0; G.vignette=null; G.vignetteW=0; G.vignetteH=0; G.killSaveTimer=0;
+G.uiTick=0; G.uiInterval=100; G.mapTheme='grassland';G.waterRects=[];G.bridges=[];G.trees=[];G.rocks=[]; G.currentEvent=null; G.eventUntil=0; G.combo=0; G.comboTimer=0; G.weaponXP=0; G.vignette=null; G.vignetteW=0; G.vignetteH=0; G.killSaveTimer=0;
 
 G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,recoil:0,muzzle:0,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:0,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:96,5:15}};
 G.baseWeapons={1:{name:'Pistol',rate:260,damage:22,spread:.035,shots:1,speed:900,color:'#e8e0c5'},2:{name:'SMG',rate:85,damage:11,spread:.11,shots:1,speed:1000,color:'#d7e8e0'},3:{name:'Shotgun',rate:650,damage:11,spread:.24,shots:7,speed:820,color:'#f2d9a3'},4:{name:'Flamethrower',rate:90,damage:2,spread:.20,shots:1,speed:450,color:'#ff8b28',range:285},5:{name:'Sniper',rate:1200,damage:75,spread:.008,shots:1,speed:1400,color:'#8fc9ff',pierce:2}};
@@ -59,22 +59,22 @@ export {G};
 // stay focused on their own systems while preserving the original gameplay.
 G.resetGame=function(){
   G.state='playing';G.wave=1;G.waveKills=0;G.waveTotal=0;G.waveTransition=false;G.shopUntil=0;
-  G.score=0;G.coins=0;G.kills=0;G.level=1;G.combo=0;G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme=['meadow','factory','ruins','lab'][Math.floor(Math.random()*4)];G.xp=0;G.xpNeed=100;G.spawnTimer=0;
+  G.score=0;G.coins=0;G.kills=0;G.level=1;G.combo=0;G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme='grassland';G.xp=0;G.xpNeed=100;G.spawnTimer=0;
   G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;
   G.selectedWeapon=1;G.weapons=JSON.parse(JSON.stringify(G.baseWeapons));G.owned={1:true,2:true,3:true,4:false,5:false};
   Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0});
   G.player.maxMag={1:12,2:30,3:6,4:24,5:5};G.player.mag={1:12,2:30,3:6,4:24,5:5};G.player.reserve={1:Infinity,2:Infinity,3:0,4:0,5:0};G.player.maxReserve={1:Infinity,2:Infinity,3:36,4:96,5:15};G.player.lastFlameFuel=0;G.player.lastFlameSound=0;
   if(G.applyDNABonuses)G.applyDNABonuses(); if(G.applyEquipment)G.applyEquipment();
   for(const k in G.player.mag)G.player.mag[k]=G.player.maxMag[k];
-  G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.makeMap();
-  G.ui.menuPanel.classList.add('hidden');G.ui.gameOverPanel.classList.add('hidden');G.ui.shopPanel.classList.add('hidden');G.ui.levelPanel.classList.add('hidden');
+  G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.generateWorld?.();
+  G.ui.menuPanel.classList.add('hidden');G.ui.gameOverPanel.classList.add('hidden');G.saveActiveProfile?.();G.ui.shopPanel.classList.add('hidden');G.ui.levelPanel.classList.add('hidden');
   G.startWave();
 };
 
 G.startWave=function(){
   if(G.state!=='playing')return;
   G.recordEquipmentUnlocks?.(G.wave);
-  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.makeMap();if(G.blocked(G.player.x,G.player.y,G.player.r+4)){G.player.x=G.WORLD.w/2;G.player.y=G.WORLD.h/2;}G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
+  G.waveKills=0;G.waveTotal=G.endless?Math.min(36,10+Math.floor(G.wave*2.2)):Math.min(28,8+Math.floor(G.wave*1.8));G.spawnTimer=850;G.generateWorld?.();if(G.entityBlocked?.(G.player.x,G.player.y,G.player.r+4)){G.player.x=G.WORLD.w/2;G.player.y=G.WORLD.h/2;}G.phase=1;if(G.startEvent)G.startEvent();if(G.player.shield&&G.equipmentHas?.('shield'))G.player.shield=30;
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
   begin();
 };
@@ -142,15 +142,18 @@ G.update=function(dt){
   G.spawnTimer-=dt;if(!G.waveTransition&&G.waveKills<G.waveTotal&&G.spawnTimer<=0){G.spawnRandomZombie();G.spawnTimer=Math.max(620,1050-G.wave*10)}
   if(!G.waveTransition&&G.waveKills>=G.waveTotal&&G.zombies.length===0&&!G.boss)G.endWave();
   G.spatialGrid.build();
-  G.updateSkills?.(dt);G.updateEvent?.(dt);G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);
+  G.updateSkills?.(dt);G.updateEvent?.(dt);G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);G.resolveActorCollisions?.();
   G.spatialGrid.build();
   G.updateGrenades(dt);G.updateDrops(dt);G.updatePowerups(dt);G.updateParticles(dt);G.updateTexts(dt);
-  if(G.comboTimer>0){G.comboTimer-=dt;if(G.comboTimer<=0)G.combo=0}if(G.killSaveTimer>=5000){localStorage.setItem('zo_kills',G.totalKills);G.killSaveTimer=0;}
+  if(G.comboTimer>0){G.comboTimer-=dt;if(G.comboTimer<=0)G.combo=0}if(G.killSaveTimer>=5000){G.saveActiveProfile?.();G.killSaveTimer=0;}
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt);
   G.camera.x=Math.max(0,Math.min(G.WORLD.w-G.W,G.player.x-G.W/2));G.camera.y=Math.max(0,Math.min(G.WORLD.h-G.H,G.player.y-G.H/2));
 };
 G.loop=function(ts){const dt=Math.min(40,ts-G.last);G.last=ts;G.update(dt);G.draw();requestAnimationFrame(G.loop)};
 
+G.renderProfileSummary=function(){const el=G.ui.profileSummary;if(!el)return;const p=G.profiles?.find(x=>x.id===G.activeProfileId);if(!p)return;el.innerHTML=`<b>👤 ${p.name}</b><br><span class="small">🧬 DNA ${G.dna} · 🏆 Best Wave ${p.bestWave||0} · ☠️ Kills ${G.totalKills}</span>`};
+G.toggleProfilePanel=function(){const p=G.ui.profilePanel;if(!p)return;if(p.classList.contains('hidden')){G.renderProfilePanel?.();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden');G.renderProfileSummary?.()}};
+G.renderProfilePanel=function(){const g=G.ui.profileGrid;if(!g)return;g.innerHTML='';for(const p of G.profiles||[]){const active=p.id===G.activeProfileId;const el=document.createElement('div');el.className='profileCard'+(active?' active':'');el.innerHTML=`<div class="profileAvatar">👤</div><b>${p.name}</b><br><span class="small">🧬 ${p.dna||0} · 🌊 ${p.bestWave||0} · ☠️ ${p.totalKills||0}</span><button class="btn profileSelect">${active?'当前玩家':'选择'}</button>`;el.querySelector('.profileSelect').onclick=()=>{if(!active){G.selectProfile(p.id);G.renderProfilePanel?.()}};g.appendChild(el)}const name=G.ui.profileNameInput;if(name){name.value=G.profileName||'';name.onchange=()=>G.renameProfile(name.value)}};
 G.toggleBuildPanel=function(){const p=G.ui.buildPanel;if(p.classList.contains('hidden')){G.renderBuildPanel();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
 G.renderBuildPanel=function(){if(!G.ui.buildPanel)return;G.ui.buildText.textContent='装备：'+(G.equipmentSummary?.()||'暂无')+' · 武器进化：'+Object.keys(G.evolved||{}).filter(k=>G.evolved[k]).length;G.ui.buildGrid.innerHTML='';for(const slot of ['head','body','boots','module','artifact']){const id=G.equipmentSlots?.[slot];const el=document.createElement('div');el.className='shopItem';el.innerHTML='<b>'+slot.toUpperCase()+'</b><br>'+(id?(G.getEquip(id)?.[1]+'<br><span class="small">'+G.getEquip(id)?.[3]+'</span>'):'<span class="small">空</span>');G.ui.buildGrid.appendChild(el)}};
 
@@ -172,3 +175,5 @@ G.renderCodex=function(){const g=G.ui.codexGrid;if(!g)return;g.innerHTML='';for(
 G.renderControls=function(){const g=G.ui.controlsGrid;if(!g)return;const rows=[['W A S D / 方向键','移动'],['鼠标移动','瞄准'],['鼠标左键','射击 / 按住喷火'],['SPACE','近战'],['SHIFT','Dash / 短暂无敌'],['G','投掷手雷'],['Q','冲击波'],['E','紧急治疗'],['1 - 5','切换武器']];g.innerHTML='';for(const r of rows){const el=document.createElement('div');el.className='controlCard';el.innerHTML=`<span class="controlKey">${r[0]}</span><b>${r[1]}</b>`;g.appendChild(el)}};
 G.toggleCodexPanel=function(){const p=G.ui.codexPanel;if(p.classList.contains('hidden')){G.renderCodex();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
 G.toggleControlsPanel=function(){const p=G.ui.controlsPanel;if(p.classList.contains('hidden')){G.renderControls();p.classList.remove('hidden');G.ui.menuPanel.classList.add('hidden')}else{p.classList.add('hidden');G.ui.menuPanel.classList.remove('hidden')}};
+
+G.renderProfileSummary?.();

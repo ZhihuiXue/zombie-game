@@ -4,7 +4,22 @@ const G = globalThis;
 G.draw = function(){G.ctx.clearRect(0,0,G.W,G.H);G.ctx.fillStyle='#0a1510';G.ctx.fillRect(0,0,G.W,G.H);G.ctx.save();if(G.state==='playing'&&G.mouse.down&&G.selectedWeapon===4&&G.owned[4])G.drawFlameCone();let sx=(Math.random()-.5)*G.shake,sy=(Math.random()-.5)*G.shake;G.ctx.translate(-G.camera.x+sx,-G.camera.y+sy);G.drawWorld();G.drawDrops();G.drawPowerups();for(const g of G.grenades)G.drawGrenade(g);for(const b of G.bullets)G.drawBullet(b);for(const z of G.zombies)G.drawZombie(z);if(G.boss)G.drawBoss();G.drawPlayer();G.drawParticles();G.drawTexts();G.ctx.restore();if(G.combo>1){G.ctx.fillStyle='#fff';G.ctx.font='bold 22px Arial';G.ctx.textAlign='center';G.ctx.fillText('🔥 COMBO x'+G.combo,G.W/2,90)}if(G.currentEvent){G.ctx.fillStyle='#ffd45a';G.ctx.font='bold 15px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.eventLabel(),G.W/2,118)}G.drawVignette();G.updateUI()};
 
 G.drawWorld=function(){
- if(!G.worldCache){const c=document.createElement('canvas');c.width=G.WORLD.w;c.height=G.WORLD.h;const x=c.getContext('2d');const theme={meadow:['#122019','#263d32','#303b37','#46534e'],factory:['#171b1c','#303638','#3d4242','#626969'],ruins:['#211b18','#40362f','#4b4139','#66594f'],lab:['#111d24','#29424c','#334e58','#4e707b']}[G.mapTheme]||['#122019','#263d32','#303b37','#46534e'];x.fillStyle=theme[0];x.fillRect(0,0,c.width,c.height);x.strokeStyle=theme[1];x.lineWidth=2;for(let xx=0;xx<G.WORLD.w;xx+=80){x.beginPath();x.moveTo(xx,0);x.lineTo(xx,G.WORLD.h);x.stroke()}for(let yy=0;yy<G.WORLD.h;yy+=80){x.beginPath();x.moveTo(0,yy);x.lineTo(G.WORLD.w,yy);x.stroke()}for(const a of G.walls){x.fillStyle=theme[2];x.fillRect(a.x,a.y,a.w,a.h);x.fillStyle=theme[3];x.fillRect(a.x+5,a.y+5,a.w-10,8);x.strokeStyle='#151d19';x.strokeRect(a.x,a.y,a.w,a.h)}G.worldCache=c}
+ if(!G.worldCache){
+  const c=document.createElement('canvas');c.width=G.WORLD.w;c.height=G.WORLD.h;const x=c.getContext('2d');
+  const b=G.biomes?.[G.mapTheme]||G.biomes?.grassland||{ground:'#31563b',ground2:'#3e6846',accent:'#6f995f'};
+  x.fillStyle=b.ground;x.fillRect(0,0,c.width,c.height);
+  x.fillStyle=b.ground2;
+  for(let i=0;i<900;i++){const px=Math.random()*c.width,py=Math.random()*c.height,s=1+Math.random()*3;x.globalAlpha=.10+.08*Math.random();x.fillRect(px,py,s,s*1.8);}x.globalAlpha=1;
+  if(G.mapTheme==='forest'||G.mapTheme==='forestRiver'){
+    x.fillStyle='rgba(16,31,21,.16)';for(let i=0;i<180;i++){const px=Math.random()*c.width,py=Math.random()*c.height;x.beginPath();x.arc(px,py,12+Math.random()*16,0,Math.PI*2);x.fill();}
+  }
+  for(const q of G.waterRects||[]){const g=x.createLinearGradient(q.x,q.y,q.x+q.w,q.y+q.h);g.addColorStop(0,'#2b7ea0');g.addColorStop(.5,'#3b9fc1');g.addColorStop(1,'#256c8c');x.fillStyle=g;x.fillRect(q.x,q.y,q.w,q.h);x.strokeStyle='rgba(210,245,255,.25)';x.lineWidth=2;for(let yy=q.y+22;yy<q.y+q.h;yy+=34){x.beginPath();x.moveTo(q.x+20,yy);x.quadraticCurveTo(q.x+q.w*.5,yy-7,q.x+q.w-20,yy);x.stroke();}}
+  for(const bridge of G.bridges||[]){x.fillStyle='#8a6a45';x.fillRect(bridge.x,bridge.y,bridge.w,bridge.h);x.fillStyle='#5b442f';for(let xx=bridge.x+8;xx<bridge.x+bridge.w;xx+=22)x.fillRect(xx,bridge.y+4,12,bridge.h-8);x.strokeStyle='#d0a66e';x.strokeRect(bridge.x,bridge.y,bridge.w,bridge.h);}
+  for(const a of G.walls||[]){if(a.kind==='tree')continue;x.fillStyle='#59635d';x.fillRect(a.x,a.y,a.w,a.h);x.fillStyle='#78847c';x.fillRect(a.x+5,a.y+5,a.w-10,8);x.strokeStyle='#26302b';x.strokeRect(a.x,a.y,a.w,a.h);}
+  for(const t of G.trees||[]){if(t.kind==='bush')continue;x.fillStyle='rgba(0,0,0,.20)';x.beginPath();x.ellipse(t.x+6,t.y+t.r*.75,t.r*1.05,t.r*.42,0,0,Math.PI*2);x.fill();x.fillStyle='#684936';x.fillRect(t.x-4,t.y-2,8,t.r*1.25);const tg=x.createRadialGradient(t.x-5,t.y-t.r*.6,2,t.x,t.y-t.r*.3,t.r*1.35);tg.addColorStop(0,'#6e9c5b');tg.addColorStop(.6,'#3f7046');tg.addColorStop(1,'#1f432b');x.fillStyle=tg;x.beginPath();x.arc(t.x,t.y-t.r*.45,t.r*1.08,0,Math.PI*2);x.fill();x.beginPath();x.arc(t.x-t.r*.55,t.y-t.r*.1,t.r*.7,0,Math.PI*2);x.fill();x.beginPath();x.arc(t.x+t.r*.55,t.y-t.r*.05,t.r*.68,0,Math.PI*2);x.fill();}
+  for(const t of G.trees||[]){if(t.kind!=='bush')continue;x.fillStyle='#47734a';x.beginPath();x.arc(t.x,t.y,t.r,0,Math.PI*2);x.fill();x.fillStyle='#6b9258';x.beginPath();x.arc(t.x-t.r*.35,t.y-t.r*.25,t.r*.5,0,Math.PI*2);x.fill();}
+  G.worldCache=c;
+ }
  G.ctx.drawImage(G.worldCache,0,0);
 };
 

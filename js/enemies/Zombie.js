@@ -1,6 +1,6 @@
 const G=globalThis;
 G.spawnPoint=function(){const side=Math.floor(Math.random()*4),m=75;return side===0?{x:m+Math.random()*(G.WORLD.w-2*m),y:m}:side===1?{x:G.WORLD.w-m,y:m+Math.random()*(G.WORLD.h-2*m)}:side===2?{x:m+Math.random()*(G.WORLD.w-2*m),y:G.WORLD.h-m}:{x:m,y:m+Math.random()*(G.WORLD.h-2*m)}};
-G.blocked=function(x,y,r){if(x<r+15||y<r+15||x>G.WORLD.w-r-15||y>G.WORLD.h-r-15)return true;for(const a of G.walls)if(x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)return true;return false};
+G.blocked=function(x,y,r){if(x<r+15||y<r+15||x>G.WORLD.w-r-15||y>G.WORLD.h-r-15)return true;for(const a of G.walls||[])if(x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)return true;if(G.circleHitsWater?.(x,y,r))return true;return false};
 G.moveEntity=function(o,vx,vy,dt){const nx=o.x+vx*dt,ny=o.y+vy*dt;if(!G.blocked(nx,o.y,o.r))o.x=nx;if(!G.blocked(o.x,ny,o.r))o.y=ny};
 const defs={normal:[28,52,105,'#668f6b'],fast:[20,92,75,'#d2a044'],tank:[38,35,300,'#53616b'],exploder:[25,55,95,'#bf6b35'],hunter:[22,120,115,'#9c5a9a'],spitter:[24,48,120,'#4c9b85'],leaper:[23,100,130,'#b58a42'],screamer:[25,58,90,'#a44ca8']};
 G.spawnZombie=function(type){let p=G.spawnPoint(),tries=0;while(G.blocked(p.x,p.y,22)&&tries++<20)p=G.spawnPoint();const d=defs[type]||defs.normal,hp=d[2]*(1+Math.max(0,G.wave-1)*.12);G.zombies.push({x:p.x,y:p.y,r:d[0],speed:d[1],damage:d[2],hp,maxHp:hp,type,color:d[3],attack:0,burnUntil:0,burnTick:0,stun:0,wander:0,jump:0,strafeDir:1,flash:0})};

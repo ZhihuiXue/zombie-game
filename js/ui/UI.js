@@ -22,3 +22,7 @@ document.getElementById("endlessBtn").onclick=()=>{G.ensureAudio();G.endless=tru
 G.ui.menuPanel.classList.remove("hidden");
 
 document.getElementById("dnaBack").onclick=()=>G.toggleDNAPanel();
+
+document.getElementById("profileBtn").onclick=()=>G.toggleProfilePanel();
+document.getElementById("profileBack").onclick=()=>G.toggleProfilePanel();
+document.getElementById("profileRenameBtn").onclick=()=>G.renameProfile(document.getElementById("profileNameInput").value);
