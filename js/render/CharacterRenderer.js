@@ -80,7 +80,7 @@ G.drawPlayerV8=function(){
     if(p.shield>0&&G.equipmentHas?.("shield")){ctx.strokeStyle="rgba(100,220,255,.42)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,35+Math.sin(now*.008)*2,0,Math.PI*2);ctx.stroke();}
   });
 };
-const ZOMBIE_SHEET="./assets/v9/zombie-body.svg?v=9.2.2";
+const ZOMBIE_SHEET="./assets/v9/zombie-body.svg?v=9.2.3";
 let zombieSheetPromise=null;
 function loadZombieSheet(){
   if(zombieSheetPromise)return zombieSheetPromise;
@@ -96,7 +96,7 @@ G.drawZombieV8=function(z){
     const dead=z.hp<=0&&z.deathTimer>0;
     const t=dead?1-z.deathTimer/520:0;
     const movingZombie=!dead&&(Math.abs(z.vx||0)+Math.abs(z.vy||0)>2);
-    const f=dead?3:(movingZombie?Math.floor(now/115)%4:Math.floor(now/360)%2);
+    const walkSpeed=z.type==="fast"||z.type==="hunter"||z.type==="leaper"?92:z.type==="tank"?145:115; const f=dead?3:(movingZombie?Math.floor(now/walkSpeed)%4:Math.floor(now/420)%2);
     const scale=(z.type==="tank"?1.28:(z.type==="exploder"?1.08:1));
     const w=Math.max(72,z.r*2.95*scale),h=Math.max(82,z.r*3.45*scale);
     const a=Math.atan2(G.player.y-z.y,G.player.x-z.x);
@@ -105,7 +105,7 @@ G.drawZombieV8=function(z){
     shadow(ctx,z.x,z.y+z.r*1.08,z.r*1.08,z.r*.3,.43);
     ctx.save();
     if(dead)ctx.translate(z.x,z.y+t*18);
-    ctx.translate(z.x,z.y-z.r*.05); ctx.globalAlpha=alpha;
+    const bob=movingZombie?Math.abs(Math.sin(now/(walkSpeed*.5)))*1.6:Math.sin(now*.0025)*.45; ctx.translate(z.x,z.y-z.r*.05-bob); ctx.globalAlpha=alpha;
     if(hue!==undefined)ctx.filter="hue-rotate("+hue+"deg) saturate(1.25)";
     ctx.imageSmoothingEnabled=true;
     ctx.drawImage(img,f*128,0,128,128,-w/2,-h/2,w,h);
