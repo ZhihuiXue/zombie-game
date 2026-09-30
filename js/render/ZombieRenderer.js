@@ -170,7 +170,7 @@ G.drawZombieV2=function(z){
 
   // Legs: clearly separated from the torso, with knees, shins and boots.
   // Draw them first so the torso overlaps only at the hips.
-  const legTop=wide?torsoW*.34:torsoW*.28;
+  const legTop=z.type==='tank'?r*.62:r*.46;
   const kneeY=r*.72, ankleY=r*1.23;
   const legGrad=ctx.createLinearGradient(-r*.7,r*.4,r*.7,ankleY);
   legGrad.addColorStop(0,'#4a514d');legGrad.addColorStop(.55,'#2d3532');legGrad.addColorStop(1,'#151a19');
@@ -179,7 +179,7 @@ G.drawZombieV2=function(z){
   ctx.moveTo(-legTop,r*.48);ctx.lineTo(-r*.08,r*.50);ctx.lineTo(-r*.13+step,kneeY);
   ctx.lineTo(-r*.34+step,ankleY);ctx.lineTo(-r*.72+step,ankleY);
   ctx.lineTo(-r*.54+step,kneeY);ctx.closePath();
-  ctx.moveTo(r*.08,r*.50);ctx.lineTo(r*legTop/r,r*.48);ctx.lineTo(r*.54-step,kneeY);
+  ctx.moveTo(r*.08,r*.50);ctx.lineTo(legTop,r*.48);ctx.lineTo(r*.54-step,kneeY);
   ctx.lineTo(r*.72-step,ankleY);ctx.lineTo(r*.34-step,ankleY);
   ctx.lineTo(r*.13-step,kneeY);ctx.closePath();ctx.fill();
   // Knee caps catch light and make the two legs read separately.
