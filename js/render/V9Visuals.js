@@ -172,16 +172,22 @@ G.drawPlayerV9=function(){
   const moving=["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].some(k=>G.keys?.has(k));
   const walk=moving?Math.sin(now*.015)*.16:0, bob=moving?Math.abs(Math.sin(now*.015))*1.5:0;
   const recoil=Math.max(0,p.recoil||0), flash=Math.max(0,p.muzzle||0);
+  // Ground contact is fixed to the world; only the body bobs. This prevents the survivor from looking airborne.
+  ctx.save();ctx.translate(p.x,p.y);
+  const S=2.08;ctx.scale(S,S);
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(1,39,25,5.8,0,0,TAU);ctx.fill();
+  ctx.restore();
   ctx.save();ctx.translate(p.x,p.y-bob);
   if(G.invuln>0&&Math.floor(G.invuln/70)%2===0)ctx.globalAlpha=.48;
-  const S=2.08;ctx.scale(S,S);
-  // Large tactical survivor silhouette.
-  ctx.fillStyle='rgba(0,0,0,.27)';ctx.beginPath();ctx.ellipse(2,36.5,25,5.8,0,0,TAU);ctx.fill();
-  // Legs with boots and knee highlights.
+  ctx.scale(S,S);
+  // Long readable legs: thigh -> knee -> shin -> boot.
   ctx.lineCap='round';ctx.lineWidth=6.5;
-  limb(ctx,-5,7,-4+walk*10,19,4,'#3b454a','#11171a');
-  limb(ctx,5,7,4-walk*10,19,4,'#4b555a','#11171a');
-  ctx.fillStyle='#101619';ctx.beginPath();ctx.ellipse(-6+walk*10,21,5.5,2.8,-.12,0,TAU);ctx.ellipse(6-walk*10,21,5.5,2.8,.12,0,TAU);ctx.fill();
+  limb(ctx,-5,7,-7+walk*11,23,5.2,'#6d7d84','#253136');
+  limb(ctx,-7+walk*11,23,-9+walk*15,36.5,5.0,'#52636a','#182126');
+  limb(ctx,5,7,7-walk*11,23,5.2,'#7b8b91','#28363b');
+  limb(ctx,7-walk*11,23,9-walk*15,36.5,5.0,'#5b6c72','#182126');
+  ctx.fillStyle='#0d1417';ctx.beginPath();ctx.ellipse(-9.5+walk*15,39,7.2,3.4,-.10,0,TAU);ctx.ellipse(9.5-walk*15,39,7.2,3.4,.10,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(220,235,230,.28)';ctx.beginPath();ctx.arc(-7+walk*11,23,2.2,0,TAU);ctx.arc(7-walk*11,23,2.2,0,TAU);ctx.fill();
   // Backpack.
   ctx.fillStyle='#1a2528';roundRect(ctx,-12,-5,7,18,2.5);ctx.fill();
   ctx.fillStyle='#53645f';ctx.fillRect(-11,-1,5,2);ctx.fillRect(-11,5,5,2);
