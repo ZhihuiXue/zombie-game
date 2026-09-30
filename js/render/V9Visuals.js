@@ -174,9 +174,9 @@ G.drawPlayerV9=function(){
   const recoil=Math.max(0,p.recoil||0), flash=Math.max(0,p.muzzle||0);
   ctx.save();ctx.translate(p.x,p.y-bob);
   if(G.invuln>0&&Math.floor(G.invuln/70)%2===0)ctx.globalAlpha=.48;
-  const S=1.82;ctx.scale(S,S);
+  const S=2.08;ctx.scale(S,S);
   // Large tactical survivor silhouette.
-  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(2,37,23,5.5,0,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(2,40,24,5.5,0,0,TAU);ctx.fill();
   // Legs with boots and knee highlights.
   ctx.lineCap='round';ctx.lineWidth=6.5;
   limb(ctx,-5,7,-4+walk*10,19,4,'#3b454a','#11171a');
@@ -187,9 +187,9 @@ G.drawPlayerV9=function(){
   ctx.fillStyle='#53645f';ctx.fillRect(-11,-1,5,2);ctx.fillRect(-11,5,5,2);
   // Torso + plate carrier.
   const body=ctx.createLinearGradient(-11,-7,12,15);body.addColorStop(0,'#788a91');body.addColorStop(.45,'#43545a');body.addColorStop(1,'#1d282c');
-  ctx.fillStyle=body;roundRect(ctx,-11,-8,22,23,5);ctx.fill();
+  ctx.fillStyle=body;roundRect(ctx,-11,-8,22,21,5);ctx.fill();
   ctx.strokeStyle='#0a1013';ctx.lineWidth=1.8;ctx.stroke();
-  ctx.fillStyle='#2c3a3e';roundRect(ctx,-12,-3,24,18,4);ctx.fill();
+  ctx.fillStyle='#2c3a3e';roundRect(ctx,-12,-3,24,16,4);ctx.fill();
   ctx.strokeStyle='rgba(183,204,198,.34)';ctx.lineWidth=.8;ctx.strokeRect(-10,-2,20,15);
   // MOLLE webbing and pouches.
   for(let y=-1;y<11;y+=4){ctx.strokeStyle='rgba(190,205,197,.22)';ctx.beginPath();ctx.moveTo(-9,y);ctx.lineTo(9,y);ctx.stroke();}
@@ -233,7 +233,7 @@ G.drawPlayer=G.drawPlayerV9;
 G.drawZombieV9=function(z){
   if(z.x<G.camera.x-220||z.x>G.camera.x+G.W+220||z.y<G.camera.y-220||z.y>G.camera.y+G.H+220)return;
   const c=G.ctx,n=performance.now(),dead=z.hp<=0,d=dead?clamp(1-(z.deathTimer||0)/560):0,r=Math.max(18,z.r||18),t=z.type||'normal';
-  const P={normal:['#a7ad9b','#d0cbb3','#39433d','#202923','#b84d48',1.62,.48],fast:['#c7aa78','#ead4a0','#61492d','#30241a','#e2a63e',1.58,.46],tank:['#9ca4a5','#d2d7d4','#424b4e','#252b2d','#d34d48',1.86,.56],exploder:['#c88b68','#efb08c','#51372d','#2d201d','#ff6b32',1.72,.50],hunter:['#ad8bb0','#dfbfdc','#3b2940','#241b29','#d7a8ff',1.62,.47],spitter:['#86c2a2','#c6e8ce','#254c3e','#172d26','#61e5a5',1.64,.49],leaper:['#c4a064','#e9d19a','#554329','#302619','#f0bd50',1.68,.46],screamer:['#bc80c3','#edc4e9','#432540','#251624','#f477ef',1.65,.50]}[t]||['#a7ad9b','#d0cbb3','#39433d','#202923','#b84d48',1.62,.48];
+  const P={normal:['#a7ad9b','#d0cbb3','#39433d','#202923','#b84d48',1.92,.46],fast:['#c7aa78','#ead4a0','#61492d','#30241a','#e2a63e',1.88,.44],tank:['#9ca4a5','#d2d7d4','#424b4e','#252b2d','#d34d48',2.12,.54],exploder:['#c88b68','#efb08c','#51372d','#2d201d','#ff6b32',2.02,.48],hunter:['#ad8bb0','#dfbfdc','#3b2940','#241b29','#d7a8ff',1.92,.45],spitter:['#86c2a2','#c6e8ce','#254c3e','#172d26','#61e5a5',1.94,.47],leaper:['#c4a064','#e9d19a','#554329','#302619','#f0bd50',1.98,.44],screamer:['#bc80c3','#edc4e9','#432540','#251624','#f477ef',1.95,.48]}[t]||['#a7ad9b','#d0cbb3','#39433d','#202923','#b84d48',1.62,.48];
   const [skin,hi,cloth,dark,accent,scale,head]=P,stride=!dead?Math.sin(n*.011+(z.x+z.y)*.012)*r*.16:0,active=!dead&&z.attack>0&&z.attack<720;
   c.save();c.translate(z.x,z.y+d*r*.45);c.globalAlpha=dead?Math.max(0,1-d*1.08):1;c.scale(scale,scale);
   c.fillStyle='rgba(0,0,0,.30)';c.beginPath();c.ellipse(2,r*1.43,r*1.05,r*.28,0,0,TAU);c.fill();
@@ -252,6 +252,12 @@ G.drawZombieV9=function(z){
   else if(t==='exploder'){c.strokeStyle='#ff7137';c.lineWidth=3;c.beginPath();c.arc(0,r*.08,r*.54,0,TAU);c.stroke();}
   else if(t==='leaper'){c.strokeStyle='#d7a755';c.lineWidth=2.5;c.beginPath();c.moveTo(-r*.54,-r*.15);c.lineTo(r*.35,r*.38);c.moveTo(r*.54,-r*.15);c.lineTo(-r*.35,r*.38);c.stroke();}
   else if(t==='screamer'){c.fillStyle='#321a34';c.beginPath();c.moveTo(-r*.60,-r*.22);c.lineTo(-r*.42,-r*.62);c.lineTo(r*.42,-r*.62);c.lineTo(r*.60,-r*.22);c.lineTo(r*.38,r*.25);c.lineTo(-r*.38,r*.25);c.closePath();c.fill();}
+  // Torn fabric, exposed wounds and grime make the silhouette read as a zombie rather than a mannequin.
+  c.strokeStyle='rgba(180,205,188,.25)';c.lineWidth=Math.max(1,r*.035);c.beginPath();
+  c.moveTo(-r*.42,-r*.12);c.lineTo(-r*.22,r*.30);c.moveTo(r*.42,-r*.12);c.lineTo(r*.22,r*.30);
+  c.moveTo(-r*.28,r*.42);c.lineTo(-r*.12,r*.22);c.moveTo(r*.30,r*.42);c.lineTo(r*.12,r*.22);c.stroke();
+  c.fillStyle='rgba(125,35,31,.72)';c.beginPath();c.ellipse(-r*.34,r*.05,r*.11,r*.18,-.3,0,TAU);c.ellipse(r*.28,-r*.16,r*.09,r*.15,.2,0,TAU);c.fill();
+  c.fillStyle='rgba(225,230,215,.28)';c.beginPath();c.arc(-r*.53,-r*.18,r*.08,0,TAU);c.arc(r*.53,-r*.18,r*.08,0,TAU);c.fill();
   c.fillStyle=skin;c.fillRect(-r*.14,-r*.60,r*.28,r*.24);
   const reach=active?r*(.58+.14*Math.sin(n*.026)):r*.28;
   c.lineWidth=r*.25;c.strokeStyle='#111614';c.beginPath();c.moveTo(-sh*.82,-r*.20);c.lineTo(-r*.90,-r*.02+stride);c.lineTo(-r*.64,reach+r*.15);c.moveTo(sh*.82,-r*.20);c.lineTo(r*.90,-r*.02-stride);c.lineTo(r*.64,reach+r*.15);c.stroke();
