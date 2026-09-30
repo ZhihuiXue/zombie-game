@@ -1,4 +1,4 @@
-/* V10.3.0 — unified free top-down shooter character art
+/* V10.4.0 — unified free top-down shooter character art
  * Player: Riley Gombart, CC-BY 3.0
  * Source: https://opengameart.org/content/animated-top-down-survivor-player
  * Zombie: Riley Gombart, CC0
@@ -46,7 +46,7 @@ G.drawPlayerV10_3=function(){
  const idx=Math.floor(performance.now()/95)%frames.length;
  const bob=moving?Math.sin(performance.now()/75)*1.5:Math.sin(performance.now()/420)*.6;
  shadow(c,p.x,p.y,34,10,.48);
- const ok=sprite(c,frames[idx],p.x,p.y-30+bob,116,78,a,Math.cos(a)<0,.98);
+ const ok=sprite(c,frames[idx],p.x,p.y-30+bob,116,70,a,Math.cos(a)<0,.98);
  if(!ok){G.drawPlayerV9?.();return;}
  if((p.muzzle||0)>0)muzzle(c,p.x+Math.cos(a)*48,p.y-31+bob+Math.sin(a)*8,a,Math.min(1,p.muzzle/70));
 };
@@ -58,7 +58,7 @@ G.drawZombieV10_3=function(z){
  const scale=t==="tank"?1.48:t==="exploder"?1.28:t==="hunter"?1.08:t==="spitter"?1.12:1;
  const a=Math.atan2((G.player?.y??z.y)-z.y,(G.player?.x??z.x)-z.x);
  shadow(c,z.x,z.y,29*scale,9*scale,.43);
- const ok=sprite(c,frames[idx],z.x,z.y-25*scale,104*scale,104*scale,a,Math.cos(a)<0,.98);
+ const ok=sprite(c,frames[idx],z.x,z.y-30*scale,104*scale,86*scale,a,Math.cos(a)<0,.98);
  if(!ok){G.drawZombieV9?.(z);return;}
  // Distinguish special enemies without replacing the underlying zombie silhouette.
  if(t!=="normal"){
