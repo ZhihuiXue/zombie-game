@@ -1,4 +1,4 @@
-// V9 visual overhaul: cinematic procedural art pass.
+// V9.3 visual overhaul: cinematic procedural art pass.
 // Gameplay state and simulation stay untouched; this module owns the final visual layer.
 const G=globalThis;
 const TAU=Math.PI*2;
@@ -247,13 +247,34 @@ G.drawPlayerV9=function(){
 G.drawPlayer=G.drawPlayerV9;
 
 G.drawZombieV9=function(z){
-  // Single synchronous zombie body renderer. Effects must never replace the body.
-  if(G.drawZombieV8)G.drawZombieV8(z);
-  const ctx=G.ctx,now=performance.now();
+  // V9.3: detailed role silhouettes + attack feedback. Everything stays in world space.
+  if(G.drawZombieV7)G.drawZombieV7(z);
+  const ctx=G.ctx,now=performance.now(),r=rSafe(z);
   if(z.hp<=0)return;
-  if(z.stun>0){
-    ctx.save();ctx.translate(z.x,z.y-rSafe(z)*1.25);ctx.fillStyle='#ffe18a';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('✦',0,0);ctx.restore();
+  ctx.save();ctx.translate(z.x,z.y);
+  const active=z.attack>0&&z.attack<720;
+  if(active){
+    const pulse=.5+.5*Math.sin(now*.035);
+    if(z.type==='spitter'){
+      ctx.strokeStyle='rgba(105,235,185,.72)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(r*.55,-r*.05);ctx.quadraticCurveTo(r*1.15,r*.15,r*1.55,r*.02);ctx.stroke();
+      ctx.fillStyle='rgba(110,255,190,.65)';ctx.beginPath();ctx.arc(r*1.55,r*.02,2.5+pulse*2,0,TAU);ctx.fill();
+    }else if(z.type==='screamer'){
+      ctx.strokeStyle='rgba(221,112,255,.65)';ctx.lineWidth=2;ctx.globalAlpha=.22+.18*pulse;
+      for(const q of [1,1.35,1.7]){ctx.beginPath();ctx.arc(0,-r*.36,r*q,Math.PI*1.20,Math.PI*1.80);ctx.stroke();}
+    }else if(z.type==='exploder'){
+      ctx.fillStyle='#ff7138';ctx.globalAlpha=.55+.3*pulse;
+      ctx.beginPath();ctx.arc(-r*.34,r*.18,3+pulse*2,0,TAU);ctx.arc(r*.32,r*.48,3+pulse*2,0,TAU);ctx.fill();
+    }else if(z.type==='leaper'){
+      ctx.strokeStyle='rgba(255,209,107,.72)';ctx.lineWidth=3;ctx.globalAlpha=.3+.2*pulse;
+      ctx.beginPath();ctx.moveTo(-r*.9,r*.9);ctx.lineTo(-r*.35,r*1.25);ctx.moveTo(r*.9,r*.9);ctx.lineTo(r*.35,r*1.25);ctx.stroke();
+    }
   }
+  if(z.stun>0){
+    ctx.fillStyle='#ffe18a';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.globalAlpha=.85+.15*Math.sin(now*.03);
+    ctx.fillText('✦',0,-r*1.45);
+  }
+  ctx.restore();
 };
 function rSafe(z){return Math.max(16,z.r||16);}
 G.drawZombie=G.drawZombieV9;function drawZombieLegsV9(z){
