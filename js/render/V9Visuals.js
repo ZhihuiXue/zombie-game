@@ -211,7 +211,26 @@ G.drawZombieV9=function(z){
   }
 };
 function rSafe(z){return Math.max(16,z.r||16);}
-G.drawZombie=G.drawZombieV9;
+G.drawZombie=G.drawZombieV9;function drawZombieLegsV9(z){
+  if(z.hp<=0)return;
+  const ctx=G.ctx,r=Math.max(16,z.r||16),now=performance.now();
+  const stride=Math.sin(now*.012+(z.x+z.y)*.01)*(z.type==='tank'?2.5:5);
+  const wide=z.type==='tank',spread=wide?r*.47:r*.36;
+  ctx.save();ctx.translate(z.x,z.y);
+  ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(2,r*1.08,r*1.1,r*.25,0,0,Math.PI*2);ctx.fill();
+  const pants=z.type==='hunter'?'#272033':z.type==='fast'?'#4a3924':z.type==='spitter'?'#293b35':'#202725';
+  ctx.fillStyle=pants;
+  ctx.strokeStyle='#0d1312';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(-spread-r*.12,r*.42,r*.25,r*.72,4);ctx.roundRect(spread-r*.13,r*.42,r*.26,r*.72,4);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#111719';ctx.beginPath();
+  ctx.ellipse(-spread+stride*.25,r*1.25,r*.34,r*.14,-.08,0,TAU);
+  ctx.ellipse(spread-stride*.25,r*1.25,r*.34,r*.14,.08,0,TAU);ctx.fill();
+  ctx.strokeStyle='rgba(190,205,195,.35)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(-spread-r*.08,r*.55);ctx.lineTo(-spread+r*.04,r*1.12);ctx.moveTo(spread-r*.04,r*.55);ctx.lineTo(spread+r*.08,r*1.12);ctx.stroke();
+  ctx.restore();
+}
+G._drawZombieLegsV9=drawZombieLegsV9;
+
 
 G.drawBulletV9=function(b){
   const ctx=G.ctx,s=Math.hypot(b.vx,b.vy)||1;
@@ -228,30 +247,29 @@ G.drawBullet=G.drawBulletV9;
 G.drawV9Lighting=function(){
   if(G.state!=='playing')return;
   const ctx=G.ctx,now=performance.now();
-  const px=G.player.x-G.camera.x,py=G.player.y-G.camera.y;
+  // V9 uses screen-space lighting only. No full-screen multiply: it was causing black map regions.
   ctx.save();
-  ctx.globalCompositeOperation='multiply';
-  const dark=ctx.createRadialGradient(px,py,Math.min(G.W,G.H)*.12,px,py,Math.max(G.W,G.H)*.78);
-  dark.addColorStop(0,'rgba(120,135,125,.98)');
-  dark.addColorStop(.22,'rgba(70,82,74,.92)');
-  dark.addColorStop(.58,'rgba(25,33,29,.88)');
-  dark.addColorStop(1,'rgba(5,9,8,.96)');
-  ctx.fillStyle=dark;ctx.fillRect(0,0,G.W,G.H);
   ctx.globalCompositeOperation='screen';
-  const pulse=1+Math.sin(now*.018)*.04;
-  const glow=ctx.createRadialGradient(px,py,2,px,py,145*pulse);
-  glow.addColorStop(0,'rgba(255,245,204,.16)');
-  glow.addColorStop(.18,'rgba(255,214,130,.09)');
-  glow.addColorStop(1,'rgba(255,180,80,0)');
-  ctx.fillStyle=glow;ctx.fillRect(px-180,py-180,360,360);
   if(G.player.muzzle>0){
-    const a=G.aim(),lx=px+Math.cos(a)*60,ly=py+Math.sin(a)*60;
-    const mg=ctx.createRadialGradient(lx,ly,2,lx,ly,95);
-    const c=G.weapons?.[G.selectedWeapon]?.color||'#ffd36b';
-        // Keep the flash reliable without depending on color parsing.
-    mg.addColorStop(0,'rgba(255,221,135,.34)');mg.addColorStop(.25,'rgba(255,164,62,.12)');mg.addColorStop(1,'rgba(255,140,40,0)');
-    ctx.fillStyle=mg;ctx.fillRect(lx-100,ly-100,200,200);
+    const px=G.player.x-G.camera.x,py=G.player.y-G.camera.y,a=G.aim();
+    const lx=px+Math.cos(a)*60,ly=py+Math.sin(a)*60;
+    const mg=ctx.createRadialGradient(lx,ly,2,lx,ly,105);
+    mg.addColorStop(0,'rgba(255,238,180,.28)');mg.addColorStop(.22,'rgba(255,180,70,.12)');mg.addColorStop(1,'rgba(255,140,40,0)');
+    ctx.fillStyle=mg;ctx.fillRect(lx-110,ly-110,220,220);
   }
+  if(G.mouse.down&&G.selectedWeapon===4&&G.owned[4]){
+    const px=G.player.x-G.camera.x,py=G.player.y-G.camera.y,a=G.aim(),x=px+Math.cos(a)*90,y=py+Math.sin(a)*90;
+    const fg=ctx.createRadialGradient(x,y,4,x,y,150);
+    fg.addColorStop(0,'rgba(255,125,35,.18)');fg.addColorStop(.35,'rgba(255,75,20,.055)');fg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=fg;ctx.fillRect(x-150,y-150,300,300);
+  }
+  if(G.boss){
+    const b=G.boss,bx=b.x-G.camera.x,by=b.y-G.camera.y,phase=b.phase||1,col=phase===3?'#ff4c42':phase===2?'#ffbd4a':'#7fe7ff';
+    const bg=ctx.createRadialGradient(bx,by,3,bx,by,120);
+    bg.addColorStop(0,col+'38');bg.addColorStop(.35,col+'10');bg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=bg;ctx.fillRect(bx-120,by-120,240,240);
+  }
+  if(G.weather?.id==='storm'&&G.weatherLightning>0){ctx.globalAlpha=Math.min(.12,G.weatherLightning/300);ctx.fillStyle='#dff7ff';ctx.fillRect(0,0,G.W,G.H);}
   ctx.restore();
 };
 G.drawVignetteV9=function(){
