@@ -28,9 +28,9 @@ import "./systems/Events.js";
 import "./systems/Weather.js";
 import "./systems/AdaptiveDirector.js";
 import "./player/PlayerProfile.js";
-import "./render/Renderer.js?v=9.2.4";
-import "./render/CharacterRenderer.js?v=9.2.4";
-import "./render/V9Visuals.js?v=9.2.4";
+import "./render/Renderer.js?v=9.2.5";
+import "./render/CharacterRenderer.js?v=9.2.5";
+import "./render/V9Visuals.js?v=9.2.5";
 import "./core/Input.js";
 import "./ui/UI.js";
 
