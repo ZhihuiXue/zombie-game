@@ -77,7 +77,8 @@ G.startWave=function(){
   const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
   if(G.shouldShowEnemyIntro&&G.shouldShowEnemyIntro(G.wave))G.showEnemyIntro(G.wave,begin);else begin();
 };
-G.startShop=function(){G.state='shop';G.shopUntil=performance.now()+7000;G.ui.shopPanel.classList.remove('hidden');G.renderShop()};
+G.startShop=function(){G.state='shop';G.shopUntil=Infinity;G.ui.shopPanel.classList.remove('hidden');G.ui.shopTimer.textContent='准备完成后，点击“开始下一波”继续';G.renderShop()};
+G.startNextWave=function(){if(G.state!=='shop')return;G.ui.shopPanel.classList.add('hidden');G.wave++;G.waveTransition=false;G.startWave()};
 G.toggleShop=function(){if(G.state==='shop')return;if(G.waveTransition)G.startShop()};
 G.endWave=function(){if(G.waveTransition)return;G.waveTransition=true;G.coins+=Math.floor(50*(1+(G.getDNAUpgrade?.('coins')||0)*.05));G.playSound('victory');G.showMessage('🎉 WAVE COMPLETE +$50',1600);setTimeout(()=>{if(G.state==='playing')G.startShop()},1700)};
 
@@ -106,13 +107,12 @@ G.updateBullets=function(dt){
 G.update=function(dt){
   if(G.state==='menu'||G.state==='gameover')return;
   if(G.state==='shop'){
-    G.ui.shopTimer.textContent='下一波准备：'+Math.max(0,Math.ceil((G.shopUntil-performance.now())/1000))+' 秒';
-    if(performance.now()>G.shopUntil){G.state='playing';G.ui.shopPanel.classList.add('hidden');G.wave++;G.waveTransition=false;G.startWave()}
+    G.ui.shopTimer.textContent='准备完成后，点击“开始下一波”继续';
     return;
   }
   if(G.state==='level'||G.state==='intro')return;
   G.playTime+=dt;G.killSaveTimer+=dt;G.player.recoil=Math.max(0,G.player.recoil-dt);G.player.muzzle=Math.max(0,G.player.muzzle-dt);G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
-  if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===3||w===4||w===5){const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}}}
+  if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===1||w===2){G.player.mag[w]=G.player.maxMag[w]}else{const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}G.reloadWeapon=0}}
   if(G.keys.has('shift')&&!G.keys._shiftUsed){G.keys._shiftUsed=true;G.dash()}if(!G.keys.has('shift'))G.keys._shiftUsed=false;
   if(G.keys.has(' ')&&!G.keys._spaceUsed){G.keys._spaceUsed=true;G.melee()}if(!G.keys.has(' '))G.keys._spaceUsed=false;
   if(G.keys.has('1'))G.selectedWeapon=1;if(G.keys.has('2'))G.selectedWeapon=2;if(G.keys.has('3'))G.selectedWeapon=3;if(G.keys.has('4'))G.selectedWeapon=4;if(G.keys.has('5'))G.selectedWeapon=5;

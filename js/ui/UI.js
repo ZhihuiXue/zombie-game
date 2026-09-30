@@ -8,6 +8,7 @@ document.getElementById("achievementBack").onclick=()=>G.toggleAchievementPanel(
 document.getElementById("buildBack").onclick=()=>G.toggleBuildPanel();
 document.getElementById("enemyIntroContinue").onclick=()=>G.continueEnemyIntro(false);
 document.getElementById("enemyIntroDismiss").onclick=()=>G.continueEnemyIntro(true);
+document.getElementById("startNext").onclick=()=>G.startNextWave();
 G.ui.soundBtn.onclick=()=>{G.soundOn=!G.soundOn;G.ui.soundBtn.textContent=G.soundOn?"🔊 Sound ON":"🔇 Sound OFF";if(G.soundOn)G.ensureAudio()};
 document.getElementById("startBtn").onclick=()=>{G.ensureAudio();G.resetGame()};
 document.getElementById("restartBtn").onclick=()=>{G.ensureAudio();G.resetGame()};
