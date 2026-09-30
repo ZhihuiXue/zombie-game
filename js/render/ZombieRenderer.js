@@ -13,10 +13,26 @@ G.drawZombie = function(z){
   const lean=z.type==='runner'||z.type==='fast'?-.08:(z.type==='hunter'?-.15:(z.type==='leaper'?.08:0));
   ctx.rotate(lean);
 
-  // Legs / torn pants.
-  ctx.strokeStyle='#28312d';ctx.lineWidth=Math.max(5,r*.22);ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(-r*.28,r*.48);ctx.lineTo(-r*.42+step,r*.95);ctx.moveTo(r*.28,r*.48);ctx.lineTo(r*.42-step,r*.95);ctx.stroke();
-  if(z.type==='tank'){ctx.strokeStyle='#4d5559';ctx.lineWidth=r*.3;ctx.beginPath();ctx.moveTo(-r*.3,r*.42);ctx.lineTo(-r*.48,r*.95);ctx.moveTo(r*.3,r*.42);ctx.lineTo(r*.48,r*.95);ctx.stroke();}
+  // Full readable legs: knees, shins and boots are intentionally longer than the torso.
+  const legLen=z.type==='tank'?r*.78:r*.95;
+  const kneeY=r*.62, footY=r*1.22;
+  const lKneeX=-r*.34+step, rKneeX=r*.34-step;
+  ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle='#242b28';ctx.lineWidth=Math.max(6,r*.24);
+  ctx.beginPath();
+  ctx.moveTo(-r*.28,r*.43);ctx.lineTo(lKneeX,kneeY);ctx.lineTo(-r*.42+step*.55,footY);
+  ctx.moveTo(r*.28,r*.43);ctx.lineTo(rKneeX,kneeY);ctx.lineTo(r*.42-step*.55,footY);
+  ctx.stroke();
+  // Knee highlights and heavy boots make the contact with the ground obvious.
+  ctx.fillStyle='#3b453f';
+  ctx.beginPath();ctx.arc(lKneeX,kneeY,Math.max(2,r*.12),0,Math.PI*2);ctx.arc(rKneeX,kneeY,Math.max(2,r*.12),0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#161c1a';
+  ctx.beginPath();
+  ctx.ellipse(-r*.45+step*.55,footY+2,r*.27,r*.12,-.10,0,Math.PI*2);
+  ctx.ellipse(r*.45-step*.55,footY+2,r*.27,r*.12,.10,0,Math.PI*2);
+  ctx.fill();
+  if(z.type==='fast'||z.type==='hunter'){ctx.strokeStyle='rgba(230,205,130,.7)';ctx.lineWidth=Math.max(2,r*.06);ctx.beginPath();ctx.moveTo(-r*.55+step*.55,footY);ctx.lineTo(-r*.35+step*.55,footY+1);ctx.moveTo(r*.35-step*.55,footY+1);ctx.lineTo(r*.55-step*.55,footY);ctx.stroke();}
+  if(z.type==='tank'){ctx.strokeStyle='#4d5559';ctx.lineWidth=r*.30;ctx.beginPath();ctx.moveTo(-r*.3,r*.42);ctx.lineTo(-r*.48,kneeY);ctx.lineTo(-r*.48,footY);ctx.moveTo(r*.3,r*.42);ctx.lineTo(r*.48,kneeY);ctx.lineTo(r*.48,footY);ctx.stroke();}
 
   // Torso with a vertical light-to-dark gradient.
   const bg=ctx.createLinearGradient(-r,-r*.25,r,r*1.0);bg.addColorStop(0,pal[0]);bg.addColorStop(.58,pal[0]);bg.addColorStop(1,pal[1]);
