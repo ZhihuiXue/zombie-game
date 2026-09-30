@@ -158,7 +158,7 @@ G.drawPlayer=function(){
   }else if(state==='dash'){
     ctx.globalAlpha=.35;ctx.strokeStyle='#72d7ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,31+Math.sin(now*.03)*3,0,Math.PI*2);ctx.stroke();
   }else if(state==='walk'){
-    ctx.globalAlpha=.16;ctx.fillStyle='#d9eee5';ctx.beginPath();ctx.arc(-pose.dir%2?0:0,25,2.5,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.16;ctx.fillStyle='#d9eee5';ctx.beginPath();ctx.arc(0,25,2.5,0,Math.PI*2);ctx.fill();
   }
   ctx.restore();
 };
