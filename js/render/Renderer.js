@@ -61,6 +61,9 @@ G.drawPlayer = function(){
   const bodyGrad=ctx.createLinearGradient(-12,-7,13,14);bodyGrad.addColorStop(0,'#71879a');bodyGrad.addColorStop(.48,'#52697b');bodyGrad.addColorStop(1,'#30414e');
   ctx.fillStyle=bodyGrad;ctx.beginPath();ctx.roundRect(-12,-7,24,23,6);ctx.fill();
   ctx.fillStyle='rgba(12,18,22,.32)';ctx.fillRect(-12,5,24,10);
+  // Character silhouette outline + compact backpack make the player read clearly against the terrain.
+  ctx.strokeStyle='rgba(5,12,15,.72)';ctx.lineWidth=2.2;ctx.beginPath();ctx.roundRect(-13,-8,26,25,7);ctx.stroke();
+  ctx.fillStyle='#26343b';ctx.beginPath();ctx.roundRect(-16,-2,5,15,2);ctx.fill();ctx.roundRect(11,-2,5,15,2);ctx.fill();
   if(G.equipmentHas?.('vest')){
     const vg=ctx.createLinearGradient(-14,-7,14,13);vg.addColorStop(0,'#566b5e');vg.addColorStop(.5,'#394c42');vg.addColorStop(1,'#202d27');ctx.fillStyle=vg;ctx.beginPath();ctx.roundRect(-14,-7,28,22,5);ctx.fill();
     ctx.strokeStyle='#718879';ctx.lineWidth=1.4;ctx.strokeRect(-13,-6,26,20);
