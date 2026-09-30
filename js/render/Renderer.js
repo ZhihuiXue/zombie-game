@@ -1,7 +1,7 @@
 // Auto-split from Zombie Outbreak V3.1. Gameplay intentionally unchanged in this refactor.
 const G = globalThis;
 
-G.draw = function(){G.ctx.clearRect(0,0,G.W,G.H);G.ctx.fillStyle='#0a1510';G.ctx.fillRect(0,0,G.W,G.H);G.ctx.save();if(G.state==='playing'&&G.mouse.down&&G.selectedWeapon===4&&G.owned[4])G.drawFlameCone();let sx=(Math.random()-.5)*G.shake,sy=(Math.random()-.5)*G.shake;G.ctx.translate(-G.camera.x+sx,-G.camera.y+sy);G.drawWorld();G.drawDrops();G.drawPowerups();for(const g of G.grenades)G.drawGrenade(g);for(const b of G.bullets)G.drawBullet(b);for(const z of G.zombies)G.drawZombie(z);if(G.boss)G.drawBoss();G.drawPlayer();G.drawParticles();G.drawTexts();G.ctx.restore();if(G.combo>1){G.ctx.fillStyle='#fff';G.ctx.font='bold 22px Arial';G.ctx.textAlign='center';G.ctx.fillText('🔥 COMBO x'+G.combo,G.W/2,90)}if(G.currentEvent){G.ctx.fillStyle='#ffd45a';G.ctx.font='bold 15px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.eventLabel(),G.W/2,118)}if(G.weather){G.ctx.fillStyle='#dce9e4';G.ctx.font='bold 13px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.weatherLabel(),G.W/2,138)}if(G.adaptive&&G.wave>=3){G.ctx.fillStyle='#b9c7ff';G.ctx.font='bold 12px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.adaptive.label(),G.W/2,158)}G.drawWeather?.();G.drawVignette();G.drawCombatOverlay();G.updateUI()};
+G.draw = function(){G.ctx.clearRect(0,0,G.W,G.H);G.ctx.fillStyle='#0a1510';G.ctx.fillRect(0,0,G.W,G.H);G.ctx.save();if(G.state==='playing'&&G.mouse.down&&G.selectedWeapon===4&&G.owned[4])G.drawFlameCone();let sx=(Math.random()-.5)*G.shake,sy=(Math.random()-.5)*G.shake;G.ctx.translate(-G.camera.x+sx,-G.camera.y+sy);G.drawWorld();G.drawDrops();G.drawPowerups();for(const g of G.grenades)G.drawGrenade(g);for(const b of G.bullets)G.drawBullet(b);for(const z of G.zombies)G.drawZombie(z);if(G.boss)G.drawBoss();G.drawPlayer();G.drawParticles();G.drawTexts();G.ctx.restore();if(G.combo>1){G.ctx.fillStyle='#fff';G.ctx.font='bold 22px Arial';G.ctx.textAlign='center';G.ctx.fillText('🔥 COMBO x'+G.combo,G.W/2,90)}if(G.currentEvent){G.ctx.fillStyle='#ffd45a';G.ctx.font='bold 15px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.eventLabel(),G.W/2,118)}if(G.weather){G.ctx.fillStyle='#dce9e4';G.ctx.font='bold 13px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.weatherLabel(),G.W/2,138)}if(G.adaptive&&G.wave>=3){G.ctx.fillStyle='#b9c7ff';G.ctx.font='bold 12px Arial';G.ctx.textAlign='center';G.ctx.fillText(G.adaptive.label(),G.W/2,158)}G.drawWeather?.();G.drawVignette();G.drawCombatOverlay();G.drawCrosshair?.();G.drawThreatPulse?.();G.updateUI()};
 
 G.drawWorld=function(){
  if(!G.worldCache){
@@ -134,7 +134,7 @@ G.drawBoss = function(){
   ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 15px Arial';ctx.fillText('👑 BOSS · PHASE '+b.phase,b.x,b.y-r-38);
 };
 
-G.drawBullet = function(b){if(b.x<G.camera.x-30||b.x>G.camera.x+G.W+30||b.y<G.camera.y-30||b.y>G.camera.y+G.H+30)return;const ctx=G.ctx;const color=b.type==='enemy'?'#ff675c':(G.weapons[b.type]?.color||'#fff');const speed=Math.hypot(b.vx,b.vy)||1;const trail=b.type===5?22:b.type===3?13:b.type===2?9:7;ctx.save();ctx.globalAlpha=b.type==='enemy'?.7:.55;ctx.strokeStyle=color;ctx.lineWidth=b.type===5?3:2;ctx.beginPath();ctx.moveTo(b.x-b.vx/speed*trail,b.y-b.vy/speed*trail);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle=color;ctx.beginPath();ctx.arc(b.x,b.y,b.type===5?4:b.type===3?3.5:3,0,Math.PI*2);ctx.fill();ctx.restore()};
+G.drawBullet = function(b){if(b.x<G.camera.x-30||b.x>G.camera.x+G.W+30||b.y<G.camera.y-30||b.y>G.camera.y+G.H+30)return;const ctx=G.ctx;const color=b.type==='enemy'?'#ff675c':(G.weapons[b.type]?.color||'#fff');const speed=Math.hypot(b.vx,b.vy)||1;const trail=b.type===5?22:b.type===3?13:b.type===2?9:7;const radius=b.type===5?4:b.type===3?3.5:3;ctx.save();ctx.globalAlpha=b.type==='enemy'?.72:.62;ctx.strokeStyle=color;ctx.lineWidth=b.type===5?3.2:2;ctx.shadowColor=color;ctx.shadowBlur=b.type===5?12:6;ctx.beginPath();ctx.moveTo(b.x-b.vx/speed*trail,b.y-b.vy/speed*trail);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle=color;ctx.beginPath();ctx.arc(b.x,b.y,radius,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.restore()};
 
 G.drawGrenade = function(g){if(g.x<G.camera.x-30||g.x>G.camera.x+G.W+30||g.y<G.camera.y-30||g.y>G.camera.y+G.H+30)return;G.ctx.fillStyle='#25362c';G.ctx.beginPath();G.ctx.arc(g.x,g.y,8,0,Math.PI*2);G.ctx.fill();G.ctx.fillStyle='#d9c28b';G.ctx.fillRect(g.x-2,g.y-11,4,4)};
 
@@ -148,6 +148,25 @@ G.drawTexts = function(){G.ctx.textAlign='center';G.ctx.font='bold 14px Arial';f
 
 G.drawCombatOverlay=function(){const ctx=G.ctx;if(G.damageFlash>0){ctx.fillStyle=`rgba(220,35,35,${Math.min(.28,G.damageFlash/800)})`;ctx.fillRect(0,0,G.W,G.H)}const hpRatio=G.player.maxHp?G.player.hp/G.player.maxHp:1;if(hpRatio<.28&&G.state==='playing'){const pulse=.08+.06*(.5+.5*Math.sin(performance.now()*.012));const g=ctx.createRadialGradient(G.W/2,G.H/2,Math.min(G.W,G.H)*.25,G.W/2,G.H/2,Math.max(G.W,G.H)*.72);g.addColorStop(0,'rgba(150,0,0,0)');g.addColorStop(1,`rgba(170,0,0,${pulse})`);ctx.fillStyle=g;ctx.fillRect(0,0,G.W,G.H)}if(G.player.dashFx>0){ctx.save();ctx.globalAlpha=Math.min(.32,G.player.dashFx/500);ctx.strokeStyle='#72d7ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(G.W/2,G.H/2,26+((230-G.player.dashFx)*.08),0,Math.PI*2);ctx.stroke();ctx.restore()}};
 
+G.drawCrosshair=function(){
+  if(G.state!=='playing')return;
+  const ctx=G.ctx,x=G.mouse.x,y=G.mouse.y,w=G.weapons[G.selectedWeapon]||{},now=performance.now();
+  const color=w.color||'#ffffff',moving=G.player.dashTime>0,pulse=1+Math.sin(now*.012)*.08;
+  const gap=G.selectedWeapon===3?9:G.selectedWeapon===5?13:7,size=G.selectedWeapon===5?12:G.selectedWeapon===4?10:8;
+  ctx.save();ctx.translate(x,y);ctx.globalAlpha=.9;ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.shadowColor=color;ctx.shadowBlur=8;
+  ctx.beginPath();ctx.moveTo(-size*1.5,-gap);ctx.lineTo(-size*.45,-gap);ctx.moveTo(size*.45,-gap);ctx.lineTo(size*1.5,-gap);ctx.moveTo(-size*1.5,gap);ctx.lineTo(-size*.45,gap);ctx.moveTo(size*.45,gap);ctx.lineTo(size*1.5,gap);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,size*.52*pulse,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle=color;ctx.globalAlpha=moving?.45:.8;ctx.beginPath();ctx.arc(0,0,2.1,0,Math.PI*2);ctx.fill();
+  if(G.reloadTimer>0){ctx.globalAlpha=.65;ctx.strokeStyle='#ffcf4a';ctx.beginPath();ctx.arc(0,0,size*1.55,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,1-G.reloadTimer/1000));ctx.stroke();}
+  ctx.restore();
+};
+G.drawThreatPulse=function(){
+  if(G.state!=='playing'||!G.zombies?.length)return;
+  let nearest=Infinity;for(const z of G.zombies){if(z.hp>0)nearest=Math.min(nearest,Math.hypot(z.x-G.player.x,z.y-G.player.y));}
+  if(nearest>=250)return;
+  const intensity=Math.max(0,1-nearest/250),pulse=.018+.035*intensity*(.5+.5*Math.sin(performance.now()*.014));
+  const ctx=G.ctx;ctx.save();const g=ctx.createRadialGradient(G.W/2,G.H/2,Math.min(G.W,G.H)*.3,G.W/2,G.H/2,Math.max(G.W,G.H)*.72);g.addColorStop(0,'rgba(255,35,35,0)');g.addColorStop(1,'rgba(255,45,45,'+pulse+')');ctx.fillStyle=g;ctx.fillRect(0,0,G.W,G.H);ctx.restore();
+};
 G.drawVignette = function(){if(!G.vignette||G.vignetteW!==G.W||G.vignetteH!==G.H){const c=document.createElement('canvas');c.width=Math.max(1,Math.floor(G.W));c.height=Math.max(1,Math.floor(G.H));const x=c.getContext('2d');const g=x.createRadialGradient(G.W/2,G.H/2,Math.min(G.W,G.H)*.25,G.W/2,G.H/2,Math.max(G.W,G.H)*.7);g.addColorStop(0,'transparent');g.addColorStop(1,'#0009');x.fillStyle=g;x.fillRect(0,0,G.W,G.H);G.vignette=c;G.vignetteW=G.W;G.vignetteH=G.H;}G.ctx.drawImage(G.vignette,0,0)};
 
 G.updateUI = function(){
