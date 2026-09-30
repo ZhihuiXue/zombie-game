@@ -1,72 +1,22 @@
-/* V10.4.0 — unified free top-down shooter character art
- * Player: Riley Gombart, CC-BY 3.0
- * Source: https://opengameart.org/content/animated-top-down-survivor-player
- * Zombie: Riley Gombart, CC0
- * Source: https://opengameart.org/content/animated-top-down-zombie
- *
- * We intentionally use complete PNG frames instead of slicing a tiny RPG sheet.
- * This removes the old "paper/cardboard" look and keeps player + zombie art in
- * the same top-down shooter visual language.
+/* V10.5.0 — 3/4 directional character presentation
+ * V10.3 used a genuine top-down shooter sheet. Rotating that sheet cannot create
+ * a 3/4 view, so V10.5 uses front/back/side silhouettes and a separate rifle.
  */
-const G=globalThis, TAU=Math.PI*2;
-const raw="https://raw.githubusercontent.com/adil192/top-down-zombie-shooter/master/images/";
-const playerIdle=[0,4,8,12,16].map(n=>raw+"Top_Down_Survivor/rifle/idle/survivor-idle_rifle_"+n+".png");
-const playerMove=[0,4,8,12,16].map(n=>raw+"Top_Down_Survivor/rifle/move/survivor-move_rifle_"+n+".png");
-const zombieIdle=[0,4,8,12,16].map(n=>raw+"Top_Down_Zombie/skeleton-idle_"+n+".png");
-const zombieMove=[0,4,8,12,16].map(n=>raw+"Top_Down_Zombie/skeleton-move_"+n+".png");
-const cache=new Map();
-function img(url){let x=cache.get(url);if(x)return x;x=new Image();x.decoding="async";x.src=url;cache.set(url,x);return x;}
-[...playerIdle,...playerMove,...zombieIdle,...zombieMove].forEach(img);
-
-function shadow(ctx,x,y,w,h,a=0.42){
- ctx.save();ctx.fillStyle="rgba(0,0,0,"+a+")";ctx.beginPath();
- ctx.ellipse(x,y+7,w,h,0,0,TAU);ctx.fill();ctx.restore();
+const G=globalThis,TAU=Math.PI*2;
+function makeImg(markup){const i=new Image();i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(markup);return i;}
+function playerArt(back=false){
+ const head=back?'<path d="M67 49q23-25 46 0v25q-23 15-46 0z" fill="#242a2b" stroke="#111618" stroke-width="4"/>':'<ellipse cx="90" cy="65" rx="24" ry="27" fill="#c18467" stroke="#15191a" stroke-width="4"/><path d="M67 59q2-29 24-33 23 3 25 33l-9-9-9 5-9-8-9 8z" fill="#252a2b" stroke="#111618" stroke-width="4"/><circle cx="81" cy="66" r="2.8" fill="#382725"/><circle cx="99" cy="66" r="2.8" fill="#382725"/><path d="M82 78q8 5 16 0" fill="none" stroke="#713f37" stroke-width="3"/>';
+ return makeImg('<svg xmlns="http://www.w3.org/2000/svg" width="180" height="215"><path d="M69 143L54 181 43 190M111 143l15 38 11 9" fill="none" stroke="#20282a" stroke-width="17" stroke-linecap="round"/><path d="M38 190q10-5 24 0l-2 10q-17 5-27-2zM118 190q14-5 25 0l5 8q-15 7-29 1z" fill="#111719"/><path d="M53 100q37-18 74 0l-6 53q-31 18-62 0z" fill="#46534e" stroke="#111719" stroke-width="5"/><path d="M61 112h58M63 129h54M69 146h42" stroke="#93a29b" stroke-opacity=".25" stroke-width="3"/><path d="M55 105L35 128 30 151M125 105l20 23 5 23" fill="none" stroke="#46534e" stroke-width="15" stroke-linecap="round"/><path d="M73 91v16h34V91" fill="#c18467"/>'+head+'</svg>');
 }
-function sprite(ctx,url,x,y,w,h,angle=0,flip=false,alpha=1){
- const im=img(url);
- if(!im.complete||!im.naturalWidth)return false;
- ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(flip?-1:1,1);
- ctx.globalAlpha=alpha;ctx.imageSmoothingEnabled=true;
- ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();return true;
+function zombieArt(back=false){
+ const head=back?'<path d="M66 52q24-22 48 0v25q-24 15-48 0z" fill="#4b5546" stroke="#151a17" stroke-width="4"/>':'<ellipse cx="90" cy="67" rx="27" ry="29" fill="#81926e" stroke="#171b18" stroke-width="5"/><path d="M63 66q4-29 27-31 23 2 28 31l-11-8-8 6-9-8-10 8z" fill="#2a2924"/><circle cx="80" cy="68" r="4" fill="#d64d4d"/><circle cx="100" cy="68" r="4" fill="#d64d4d"/><path d="M75 83q15 11 30 0" stroke="#3a211e" stroke-width="6" fill="none"/>';
+ return makeImg('<svg xmlns="http://www.w3.org/2000/svg" width="180" height="220"><path d="M70 146l-18 39-12 9M110 146l18 39 12 9" fill="none" stroke="#30382e" stroke-width="18" stroke-linecap="round"/><path d="M38 194q12-5 25 1M117 194q13-5 26 1" stroke="#171b17" stroke-width="10" stroke-linecap="round"/><path d="M52 104q38-19 76 0l-5 51q-33 18-66 0z" fill="#465443" stroke="#151a17" stroke-width="5"/><path d="M57 108L30 130 17 158M123 108l27 22 13 28" fill="none" stroke="#465443" stroke-width="16" stroke-linecap="round"/><path d="M29 156l-12 18M151 156l12 18" stroke="#81926e" stroke-width="10" stroke-linecap="round"/>'+head+'</svg>');
 }
-function aimAngle(){
- return typeof G.aim==="function"?G.aim():Math.atan2((G.input?.mouseY??G.mouseY??0)-(G.canvas?.height?G.canvas.height/2:0),(G.input?.mouseX??G.mouseX??0)-(G.canvas?.width?G.canvas.width/2:0));
-}
-function muzzle(ctx,x,y,a,power=1){
- ctx.save();ctx.translate(x,y);ctx.rotate(a);
- ctx.globalCompositeOperation="lighter";ctx.shadowColor="#ffbd55";ctx.shadowBlur=18;
- const r=14+power*12;ctx.fillStyle="rgba(255,204,91,.9)";
- ctx.beginPath();ctx.moveTo(r+18,0);ctx.lineTo(5,-7-power*5);ctx.lineTo(9,0);ctx.lineTo(5,7+power*5);ctx.closePath();ctx.fill();
- ctx.restore();
-}
-G.drawPlayerV10_3=function(){
- const p=G.player,c=G.ctx,a=aimAngle();
- const moving=Math.hypot(p.vx||0,p.vy||0)>.15;
- const frames=moving?playerMove:playerIdle;
- const idx=Math.floor(performance.now()/95)%frames.length;
- const bob=moving?Math.sin(performance.now()/75)*1.5:Math.sin(performance.now()/420)*.6;
- shadow(c,p.x,p.y,34,10,.48);
- const ok=sprite(c,frames[idx],p.x,p.y-30+bob,116,70,a,Math.cos(a)<0,.98);
- if(!ok){G.drawPlayerV9?.();return;}
- if((p.muzzle||0)>0)muzzle(c,p.x+Math.cos(a)*48,p.y-31+bob+Math.sin(a)*8,a,Math.min(1,p.muzzle/70));
-};
-G.drawZombieV10_3=function(z){
- const c=G.ctx,t=z.type||"normal";
- const moving=Math.hypot(z.vx||0,z.vy||0)>.08;
- const frames=moving?zombieMove:zombieIdle;
- const idx=Math.floor(performance.now()/125+(z.x+z.y)*.01)%frames.length;
- const scale=t==="tank"?1.48:t==="exploder"?1.28:t==="hunter"?1.08:t==="spitter"?1.12:1;
- const a=Math.atan2((G.player?.y??z.y)-z.y,(G.player?.x??z.x)-z.x);
- shadow(c,z.x,z.y,29*scale,9*scale,.43);
- const ok=sprite(c,frames[idx],z.x,z.y-30*scale,104*scale,86*scale,a,Math.cos(a)<0,.98);
- if(!ok){G.drawZombieV9?.(z);return;}
- // Distinguish special enemies without replacing the underlying zombie silhouette.
- if(t!=="normal"){
-  c.save();c.globalAlpha=.22;c.fillStyle=t==="tank"?"#d6dbe0":t==="spitter"?"#49d58a":t==="exploder"?"#ff6a45":t==="hunter"?"#bb82ff":"#e2ad58";
-  c.beginPath();c.ellipse(z.x,z.y-52*scale,23*scale,12*scale,0,0,TAU);c.fill();c.restore();
- }
-};
-G.drawPlayerV9=G.drawPlayerV10_3;
-G.drawZombieV9=G.drawZombieV10_3;
-G.drawPlayer=G.drawPlayerV10_3;
-G.drawZombie=G.drawZombieV10_3;
+const playerFront=playerArt(false),playerBack=playerArt(true),playerSide=playerArt(false);
+const zombieFront=zombieArt(false),zombieBack=zombieArt(true),zombieSide=zombieArt(false);
+function body(im,x,y,w,h,flip=false){if(!im.complete||!im.naturalWidth)return false;const c=G.ctx;c.save();c.translate(x,y);c.scale(flip?-1:1,1);c.drawImage(im,-w/2,-h,w,h);c.restore();return true;}
+function dirBucket(a){const n=(a+TAU)%TAU;if(n>Math.PI*.25&&n<Math.PI*.75)return 'front';if(n>Math.PI*1.25&&n<Math.PI*1.75)return 'back';return 'side';}
+function gun(c,x,y,a,flash){c.save();c.translate(x,y);c.rotate(a);c.fillStyle='#20272a';c.strokeStyle='#080d0f';c.lineWidth=4;c.fillRect(10,-6,58,12);c.strokeRect(10,-6,58,12);c.fillStyle='#667076';c.fillRect(43,-4,20,8);c.fillStyle='#111719';c.fillRect(12,4,15,16);c.restore();if(flash>0){c.save();c.translate(x+Math.cos(a)*73,y+Math.sin(a)*73);c.rotate(a);c.globalCompositeOperation='lighter';c.fillStyle='#ffd06a';c.shadowColor='#ffad3e';c.shadowBlur=22;c.beginPath();c.moveTo(22,0);c.lineTo(0,-10);c.lineTo(6,0);c.lineTo(0,10);c.closePath();c.fill();c.restore();}}
+G.drawPlayerV10_3=function(){const p=G.player,c=G.ctx,a=G.aim?.()||0,d=dirBucket(a);c.save();c.fillStyle='rgba(0,0,0,.38)';c.beginPath();c.ellipse(p.x,p.y+4,32,9,0,0,TAU);c.fill();c.restore();const im=d==='front'?playerFront:d==='back'?playerBack:playerSide;body(im,p.x,p.y,112,150,d==='side'&&Math.cos(a)<0);gun(c,p.x,p.y-76,a,p.muzzle||0);};
+G.drawZombieV10_3=function(z){const c=G.ctx,t=z.type||'normal',a=Math.atan2((G.player?.y??z.y)-z.y,(G.player?.x??z.x)-z.x),d=dirBucket(a),s=t==='tank'?1.35:t==='exploder'?1.22:1;c.save();c.fillStyle='rgba(0,0,0,.36)';c.beginPath();c.ellipse(z.x,z.y+4,31*s,9*s,0,0,TAU);c.fill();c.restore();const im=d==='front'?zombieFront:d==='back'?zombieBack:zombieSide;body(im,z.x,z.y,108*s,154*s,d==='side'&&Math.cos(a)<0);if(t!=='normal'){c.save();c.globalAlpha=.28;c.fillStyle=t==='tank'?'#d8dde0':t==='spitter'?'#50d88e':t==='exploder'?'#ff704d':t==='hunter'?'#bb84ff':'#e0ae5b';c.beginPath();c.ellipse(z.x,z.y-87*s,25*s,13*s,0,0,TAU);c.fill();c.restore();}};
+G.drawPlayerV9=G.drawPlayerV10_3;G.drawZombieV9=G.drawZombieV10_3;G.drawPlayer=G.drawPlayerV10_3;G.drawZombie=G.drawZombieV10_3;
