@@ -168,6 +168,8 @@ test("V6.0 lifecycle wiring is present in the real source", () => {
   const player = fs.readFileSync(path.join(ROOT, "js/player/Player.js"), "utf8");
   const weapons = fs.readFileSync(path.join(ROOT, "js/player/Weapons.js"), "utf8");
   const renderer = fs.readFileSync(path.join(ROOT, "js/render/Renderer.js"), "utf8");
+  const v8 = fs.readFileSync(path.join(ROOT, "js/render/CharacterRenderer.js"), "utf8");
+  const main = fs.readFileSync(path.join(ROOT, "js/main.js"), "utf8");
   const css = fs.readFileSync(path.join(ROOT, "css/main.css"), "utf8");
 
   assert.match(main, /systems\/AdaptiveDirector\.js/);
@@ -185,7 +187,7 @@ test("V6.0 lifecycle wiring is present in the real source", () => {
 });
 
 
-test("V7 visual systems are wired into character renderers", () => {
+test("V8 sprite character systems are wired into the game", () => {
   const player = fs.readFileSync(path.join(ROOT, "js/player/Player.js"), "utf8");
   const zombie = fs.readFileSync(path.join(ROOT, "js/enemies/Zombie.js"), "utf8");
   const boss = fs.readFileSync(path.join(ROOT, "js/enemies/Boss.js"), "utf8");
@@ -212,4 +214,11 @@ test("V7 visual systems are wired into character renderers", () => {
   assert.match(renderer, /muzzle light/);
   assert.match(renderer, /Flamethrower heat spill/);
   assert.match(renderer, /Boss core light/);
+  assert.match(main, /render\/CharacterRenderer\.js/);
+  assert.doesNotMatch(main, /render\/ZombieRenderer\.js/);
+  assert.match(v8, /G\.drawPlayerV8=function\(\)/);
+  assert.match(v8, /G\.drawZombieV8=function\(z\)/);
+  assert.match(v8, /assets\/v8\/player\.svg/);
+  assert.match(v8, /assets\/v8\/zombie-normal\.svg/);
+  assert.match(v8, /assets\/v8\/zombie-tank\.svg/);
 });
