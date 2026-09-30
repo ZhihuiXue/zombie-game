@@ -28,9 +28,10 @@ import "./systems/Events.js";
 import "./systems/Weather.js";
 import "./systems/AdaptiveDirector.js";
 import "./player/PlayerProfile.js";
-import "./render/Renderer.js?v=9.6.3";
-import "./render/V9Visuals.js?v=9.6.3";
+import "./render/Renderer.js?v=10.0.0";
+import "./render/V9Visuals.js?v=10.0.0";
 import "./core/Input.js";
+import "./render/V10Art.js";
 import "./ui/UI.js";
 
 const G=globalThis;
