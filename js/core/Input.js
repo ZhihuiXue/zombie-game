@@ -33,7 +33,8 @@ function moveStick(x,y){
 function resetMove(){['a','d','w','s'].forEach(k=>setKey(k,false));const knob=document.getElementById('touchMoveKnob');if(knob)knob.style.transform='translate(0,0)'}
 function resetAim(){G.mouse.down=false;const dot=document.getElementById('touchAimDot');if(dot)dot.style.transform='translate(0,0)'}
 function buttonAction(action){
-  if(action==='dash')G.dash();
+  if(action==='reload')G.startReload();
+  else if(action==='dash')G.dash();
   else if(action==='melee')G.melee();
   else if(action==='grenade')G.throwGrenade();
   else if(action==='shock')G.useShockwave?.();
@@ -51,6 +52,9 @@ function setupTouchControls(){
   const aimMove=e=>{for(const t of e.changedTouches)if(t.identifier===touch.aimId){e.preventDefault();setAim(t.clientX,t.clientY);const el=document.getElementById('touchAimDot');if(el){const r=aim.getBoundingClientRect();const dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2),len=Math.hypot(dx,dy)||1,s=Math.min(45/len,1);el.style.transform=`translate(${dx*s}px,${dy*s}px)`}}};
   const aimEnd=e=>{for(const t of e.changedTouches)if(t.identifier===touch.aimId){touch.aimId=null;resetAim()}};
   aim.addEventListener('touchstart',aimStart,{passive:false});aim.addEventListener('touchmove',aimMove,{passive:false});aim.addEventListener('touchend',aimEnd,{passive:false});aim.addEventListener('touchcancel',aimEnd,{passive:false});
+  root.querySelectorAll('[data-touch-weapon]').forEach(btn=>{
+    btn.addEventListener('touchstart',e=>{e.preventDefault();const w=Number(btn.dataset.touchWeapon);if(G.owned?.[w]){G.selectedWeapon=w;G.showMessage?.(G.weapons[w]?.name||('武器 '+w),500)}else{G.showMessage?.('🔒 该武器尚未解锁',700);G.playSound?.('error')}} ,{passive:false});
+  });
   root.querySelectorAll('[data-touch-action]').forEach(btn=>{
     const action=btn.dataset.touchAction;
     btn.addEventListener('touchstart',e=>{e.preventDefault();buttonAction(action)},{passive:false});
