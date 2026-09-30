@@ -18,21 +18,91 @@ function ready(ctx,im,x,y,w,h,a){if(!im.complete||!im.naturalWidth)return false;
 G.drawWorld=function(){
   if(!G.v10WorldCache||G.v10WorldW!==G.WORLD.w||G.v10WorldH!==G.WORLD.h){
     const c=document.createElement('canvas');c.width=G.WORLD.w;c.height=G.WORLD.h;const x=c.getContext('2d');
-    x.fillStyle='#3a403c';x.fillRect(0,0,c.width,c.height);
-    x.strokeStyle='rgba(15,20,18,.18)';x.lineWidth=2;
-    for(let yy=0;yy<c.height;yy+=96){x.beginPath();x.moveTo(0,yy);x.lineTo(c.width,yy+4);x.stroke();}
-    for(let xx=0;xx<c.width;xx+=128){x.beginPath();x.moveTo(xx,0);x.lineTo(xx+3,c.height);x.stroke();}
-    x.fillStyle='rgba(205,193,145,.14)';x.fillRect(c.width*.08,c.height*.48,c.width*.84,10);
-    x.fillStyle='rgba(214,203,161,.16)';for(let xx=c.width*.1;xx<c.width*.92;xx+=86)x.fillRect(xx,c.height*.475,42,4);
-    let seed=918273;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
-    for(let i=0;i<1050;i++){const px=rnd()*c.width,py=rnd()*c.height,s=.5+rnd()*4;x.fillStyle=rnd()<.72?'rgba(20,25,23,.10)':'rgba(185,181,158,.08)';x.fillRect(px,py,s,s*(.5+rnd()));}
-    for(let i=0;i<58;i++){const px=rnd()*c.width,py=rnd()*c.height,rx=10+rnd()*34,ry=3+rnd()*10;const g=x.createRadialGradient(px,py,1,px,py,rx);g.addColorStop(0,'rgba(115,139,135,.20)');g.addColorStop(1,'rgba(12,20,19,0)');x.fillStyle=g;x.beginPath();x.ellipse(px,py,rx,ry,rnd()*Math.PI,0,Math.PI*2);x.fill();}
-    for(let i=0;i<14;i++){const px=40+rnd()*(c.width-80),py=40+rnd()*(c.height-80);x.fillStyle='#252b29';x.beginPath();x.ellipse(px,py,17,8,0,0,Math.PI*2);x.fill();x.strokeStyle='rgba(143,151,142,.35)';x.stroke();}
-    for(let i=0;i<22;i++){const px=30+rnd()*(c.width-60),py=30+rnd()*(c.height-60),w=22+rnd()*30,h=16+rnd()*18;x.fillStyle='#4d4a3d';x.fillRect(px,py,w,h);x.strokeStyle='#242824';x.strokeRect(px,py,w,h);x.strokeStyle='rgba(194,164,101,.25)';x.beginPath();x.moveTo(px,py);x.lineTo(px+w,py+h);x.moveTo(px+w,py);x.lineTo(px,py+h);x.stroke();}
-    for(let i=0;i<9;i++){const px=50+rnd()*(c.width-100),py=50+rnd()*(c.height-100),w=62,h=30;x.fillStyle='rgba(8,11,11,.34)';x.beginPath();x.roundRect(px,py,w,h,6);x.fill();x.fillStyle='#4b5554';x.roundRect(px+3,py+3,w-6,h-6,5);x.fill();x.fillStyle='rgba(27,37,38,.75)';x.fillRect(px+10,py+6,18,8);x.fillRect(px+w-28,py+6,18,8);x.fillStyle='#171d1c';x.fillRect(px+8,py+h-6,12,4);x.fillRect(px+w-20,py+h-6,12,4);}
-    for(let i=0;i<260;i++){const px=rnd()*c.width,py=rnd()*c.height;x.strokeStyle=rnd()<.7?'rgba(72,105,69,.55)':'rgba(91,77,61,.55)';x.lineWidth=1.5;x.beginPath();x.moveTo(px,py);x.lineTo(px-2+rnd()*5,py-5-rnd()*9);x.stroke();}
-    for(let i=0;i<34;i++){const px=rnd()*c.width,py=rnd()*c.height,rx=4+rnd()*13,ry=2+rnd()*7;x.fillStyle='rgba(88,22,23,.24)';x.beginPath();x.ellipse(px,py,rx,ry,rnd()*Math.PI,0,Math.PI*2);x.fill();for(let k=0;k<3;k++){x.beginPath();x.arc(px+(rnd()-.5)*25,py+(rnd()-.5)*18,1+rnd()*2,0,Math.PI*2);x.fill();}}
-    for(const a of G.walls||[]){if(a.kind==='tree')continue;x.fillStyle='#4a504c';x.fillRect(a.x,a.y,a.w,a.h);x.fillStyle='rgba(190,188,165,.18)';x.fillRect(a.x+4,a.y+4,a.w-8,5);x.strokeStyle='#222824';x.strokeRect(a.x,a.y,a.w,a.h);}
+    let seed=918273;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    // V10.4: faux 3/4 industrial environment. The playable coordinates stay unchanged;
+    // only the art gains depth through receding bands, curbs, vertical facades and long shadows.
+    x.fillStyle='#303936';x.fillRect(0,0,c.width,c.height);
+    // distant concrete slabs / perspective seams
+    for(let y=-80;y<c.height+120;y+=150){
+      const shade=((Math.floor(y/150)&1)?'#343c39':'#303835');
+      x.fillStyle=shade;x.fillRect(0,y,c.width,150);
+      x.strokeStyle='rgba(9,14,13,.28)';x.lineWidth=2;x.beginPath();x.moveTo(0,y);x.lineTo(c.width,y+8);x.stroke();
+    }
+    for(let i=-2;i<14;i++){
+      const bx=i*150;
+      x.strokeStyle='rgba(12,18,17,.20)';x.lineWidth=2;x.beginPath();x.moveTo(bx,0);x.lineTo(bx+55,c.height);x.stroke();
+    }
+    // Main road with perspective-like edges and lane dashes.
+    const ry=c.height*.50;
+    x.fillStyle='#252c2a';x.fillRect(0,ry,c.width,c.height*.18);
+    x.fillStyle='#555b52';x.fillRect(0,ry-8,c.width,9);x.fillRect(0,ry+c.height*.18,c.width,10);
+    x.fillStyle='rgba(224,211,164,.42)';
+    for(let xx=20;xx<c.width;xx+=118)x.fillRect(xx,ry+c.height*.09,52,4);
+    // drains / cracks / grime
+    for(let i=0;i<1200;i++){
+      const px=rnd()*c.width,py=rnd()*c.height,s=.5+rnd()*3;
+      x.fillStyle=rnd()<.76?'rgba(9,14,13,.11)':'rgba(194,187,157,.07)';
+      x.fillRect(px,py,s,s*(.4+rnd()*1.5));
+    }
+    for(let i=0;i<85;i++){
+      const px=rnd()*c.width,py=rnd()*c.height,rx=12+rnd()*38,ry2=3+rnd()*9;
+      const g=x.createRadialGradient(px,py,1,px,py,rx);
+      g.addColorStop(0,'rgba(102,122,118,.18)');g.addColorStop(1,'rgba(10,16,15,0)');
+      x.fillStyle=g;x.beginPath();x.ellipse(px,py,rx,ry2,rnd()*Math.PI,0,TAU);x.fill();
+    }
+    // 3/4 scenery: raised walls/containers with visible front faces and cast shadows.
+    function block(px,py,w,h,d,top='#56605b',front='#363f3b',edge='#1b2220'){
+      x.fillStyle='rgba(0,0,0,.28)';x.beginPath();x.roundRect(px+8,py+10,w,d*.75,5);x.fill();
+      x.fillStyle=front;x.fillRect(px,py+d,w,h);
+      x.fillStyle=top;x.beginPath();x.moveTo(px,py+d);x.lineTo(px+16,py);x.lineTo(px+w+16,py);x.lineTo(px+w,py+d);x.closePath();x.fill();
+      x.strokeStyle=edge;x.lineWidth=2;x.stroke();
+      x.fillStyle='rgba(225,225,205,.12)';x.fillRect(px+8,py+d+8,w-16,5);
+    }
+    for(let i=0;i<15;i++){
+      const px=35+rnd()*(c.width-170),py=35+rnd()*(c.height-150),w=55+rnd()*90,h=25+rnd()*28,d=12+rnd()*16;
+      block(px,py,w,h,d,rnd()<.55?'#5b625b':'#4f5958',rnd()<.5?'#353d3a':'#3b4541', '#1d2522');
+    }
+    // shipping crates with visible front + top
+    for(let i=0;i<30;i++){
+      const px=20+rnd()*(c.width-55),py=25+rnd()*(c.height-55),w=18+rnd()*28,h=13+rnd()*16,d=8+rnd()*7;
+      block(px,py,w,h,d,'#6a604a','#4b4537','#292a24');
+      x.strokeStyle='rgba(220,190,125,.25)';x.beginPath();x.moveTo(px+3,py+d+3);x.lineTo(px+w-3,py+d+h-3);x.moveTo(px+w-3,py+d+3);x.lineTo(px+3,py+d+h-3);x.stroke();
+    }
+    // cars / vans with roof, glass and lower body, so they read as 3D objects.
+    for(let i=0;i<8;i++){
+      const px=45+rnd()*(c.width-110),py=35+rnd()*(c.height-90),w=58+rnd()*38,h=25+rnd()*12,d=11;
+      x.fillStyle='rgba(0,0,0,.34)';x.fillRect(px+8,py+d+h+5,w,h*.35);
+      x.fillStyle='#4b5350';x.fillRect(px,py+d,w,h);
+      x.fillStyle='#6b7470';x.beginPath();x.moveTo(px+8,py+d);x.lineTo(px+18,py,w-18+px,py);x.lineTo(px+w-5,py+d);x.closePath();x.fill();
+      x.fillStyle='#1d282a';x.fillRect(px+18,py+d+4,w-35,8);
+      x.fillStyle='#171d1d';x.fillRect(px+5,py+d+h-4,13,6);x.fillRect(px+w-18,py+d+h-4,13,6);
+      x.strokeStyle='#151b19';x.strokeRect(px,py+d,w,h);
+    }
+    // blood, weeds and small vertical details
+    for(let i=0;i<42;i++){
+      const px=rnd()*c.width,py=rnd()*c.height,rx=4+rnd()*14,ry2=2+rnd()*7;
+      x.fillStyle='rgba(108,25,28,.27)';x.beginPath();x.ellipse(px,py,rx,ry2,rnd()*Math.PI,0,TAU);x.fill();
+    }
+    for(let i=0;i<230;i++){
+      const px=rnd()*c.width,py=rnd()*c.height;
+      x.strokeStyle=rnd()<.7?'rgba(73,111,72,.55)':'rgba(104,83,61,.5)';
+      x.lineWidth=1.5;x.beginPath();x.moveTo(px,py);x.lineTo(px-2+rnd()*5,py-5-rnd()*10);x.stroke();
+    }
+    // fixed drains and manholes
+    for(let i=0;i<18;i++){
+      const px=35+rnd()*(c.width-70),py=35+rnd()*(c.height-70);
+      x.fillStyle='#1c2422';x.beginPath();x.ellipse(px,py,18,8,0,0,TAU);x.fill();
+      x.strokeStyle='rgba(150,158,147,.35)';x.stroke();
+      x.strokeStyle='rgba(90,98,91,.3)';x.beginPath();x.moveTo(px-10,py);x.lineTo(px+10,py);x.stroke();
+    }
+    // existing collision walls become substantial raised structures
+    for(const a of G.walls||[]){
+      if(a.kind==='tree')continue;
+      x.fillStyle='rgba(0,0,0,.35)';x.fillRect(a.x+9,a.y+14,a.w,a.h);
+      x.fillStyle='#3f4844';x.fillRect(a.x,a.y+12,a.w,a.h);
+      x.fillStyle='#5e6660';x.beginPath();x.moveTo(a.x,a.y+12);x.lineTo(a.x+12,a.y);x.lineTo(a.x+a.w+12,a.y);x.lineTo(a.x+a.w,a.y+12);x.closePath();x.fill();
+      x.strokeStyle='#202722';x.strokeRect(a.x,a.y+12,a.w,a.h);
+    }
     G.v10WorldCache=c;G.v10WorldW=G.WORLD.w;G.v10WorldH=G.WORLD.h;
   }
   G.ctx.drawImage(G.v10WorldCache,0,0);
