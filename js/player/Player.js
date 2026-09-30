@@ -119,3 +119,46 @@ G.drawPlayerV2=function(){
 };
 G.drawPlayer=G.drawPlayerV2;
 
+
+
+/* V7 Character Animation Layer — 8-direction pose, locomotion states, hurt/death */
+G.getPlayerPose8=function(){
+  const a=G.aim(), oct=Math.round(a/(Math.PI/4)), dir=((oct%8)+8)%8;
+  const moving=G.keys.has('w')||G.keys.has('a')||G.keys.has('s')||G.keys.has('d')||G.keys.has('arrowup')||G.keys.has('arrowdown')||G.keys.has('arrowleft')||G.keys.has('arrowright');
+  return {angle:dir*Math.PI/4,dir,moving};
+};
+G.playerAnimState=function(){
+  const p=G.player, now=performance.now();
+  if(p.hp<=0)return 'death';
+  if(p.hitFlash>0)return 'hurt';
+  if(p.dashTime>0)return 'dash';
+  return G.getPlayerPose8().moving?'walk':'idle';
+};
+const _drawPlayerBaseV7=G.drawPlayer;
+G.drawPlayer=function(){
+  const ctx=G.ctx,p=G.player,pose=G.getPlayerPose8(),state=G.playerAnimState(),now=performance.now();
+  const phase=now*.014, bob=state==='walk'?Math.abs(Math.sin(phase))*1.8:state==='idle'?Math.sin(now*.0025)*.8:0;
+  // Directional ground shadow communicates the 8-way facing even though the weapon remains mouse-driven.
+  ctx.save();ctx.translate(p.x,p.y+24);
+  ctx.rotate(pose.angle);ctx.globalAlpha=.16;
+  ctx.fillStyle='#08100d';ctx.beginPath();ctx.ellipse(0,0,27,8,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(105,210,255,.10)';ctx.beginPath();ctx.ellipse(8,0,18,5,0,0,Math.PI*2);ctx.fill();ctx.restore();
+
+  // Directional rim/backlight: eight discrete pose accents rather than a fixed silhouette.
+  ctx.save();ctx.translate(p.x,p.y-bob);ctx.rotate(pose.angle);ctx.globalAlpha=state==='hurt'?.45:.22;
+  ctx.strokeStyle=state==='hurt'?'#ff6b6b':p.dashTime>0?'#72d7ff':'#b9d4c8';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-10,9);ctx.lineTo(-13,22);ctx.moveTo(10,9);ctx.lineTo(13,22);ctx.stroke();
+  ctx.restore();
+
+  // Existing detailed character remains the core render; animation overlays add state readability.
+  _drawPlayerBaseV7();
+  ctx.save();ctx.translate(p.x,p.y-bob);
+  if(state==='hurt'){
+    ctx.globalAlpha=.6;ctx.strokeStyle='#ff625f';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,30+Math.sin(now*.04)*2,0,Math.PI*2);ctx.stroke();
+  }else if(state==='dash'){
+    ctx.globalAlpha=.35;ctx.strokeStyle='#72d7ff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,31+Math.sin(now*.03)*3,0,Math.PI*2);ctx.stroke();
+  }else if(state==='walk'){
+    ctx.globalAlpha=.16;ctx.fillStyle='#d9eee5';ctx.beginPath();ctx.arc(-pose.dir%2?0:0,25,2.5,0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+};
