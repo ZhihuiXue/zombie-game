@@ -179,4 +179,6 @@ test("V6.0 lifecycle wiring is present in the real source", () => {
   assert.match(zombie, /G\.adaptive\?\.recordKill\(z\)/);
   assert.match(player, /G\.adaptive\?\.recordDamageTaken\(n\)/);
   assert.match(weapons, /G\.adaptive\?\.recordShot\(4\)/);
+  assert.match(player, /G\.drawPlayerV2=function\(\)/);
+  assert.match(zombie, /G\.drawZombieV2=function\(z\)/);
 });
