@@ -179,6 +179,33 @@ G.drawZombie = function(z){
   if(z.hp<z.maxHp){const w=r*2.15;ctx.fillStyle='rgba(12,18,16,.78)';ctx.fillRect(z.x-w/2,z.y-r-20,w,4);ctx.fillStyle=low?'#ff4b4b':'#d95757';ctx.fillRect(z.x-w/2,z.y-r-20,w*Math.max(0,z.hp/z.maxHp),4);}
 };
 
+G.renderZombiePortrait = function(canvas,type){
+  if(!canvas)return;
+  const portraitCtx=canvas.getContext('2d');
+  if(!portraitCtx)return;
+  const oldCtx=G.ctx, oldW=G.W, oldH=G.H, oldCamera=G.camera;
+  const size=canvas.width||180;
+  const h=canvas.height||150;
+  const scale=Math.min(size,h)/150;
+  const centerX=size/(2*scale), centerY=h/(2*scale)+12;
+  const z={x:centerX,y:centerY,r:26,speed:type==='fast'||type==='hunter'?100:type==='tank'?35:60,hp:100,maxHp:100,type,flash:0,burnUntil:0};
+  G.ctx=portraitCtx;
+  G.W=size/scale; G.H=h/scale; G.camera={x:-80,y:-80};
+  portraitCtx.save();
+  portraitCtx.setTransform(1,0,0,1,0,0);
+  portraitCtx.clearRect(0,0,size,h);
+  const bg=portraitCtx.createRadialGradient(size*.45,h*.42,8,size*.5,h*.55,size*.7);
+  bg.addColorStop(0,'#183025');
+  bg.addColorStop(1,'#07100c');
+  portraitCtx.fillStyle=bg; portraitCtx.fillRect(0,0,size,h);
+  portraitCtx.restore();
+  portraitCtx.save();
+  portraitCtx.scale(scale,scale);
+  G.drawZombie(z);
+  portraitCtx.restore();
+  G.ctx=oldCtx; G.W=oldW; G.H=oldH; G.camera=oldCamera;
+};
+
 G.drawBoss = function(){
   const b=G.boss;if(!b)return;const ctx=G.ctx,now=performance.now(),r=b.r;
   ctx.save();ctx.translate(b.x,b.y);
