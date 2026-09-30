@@ -105,7 +105,7 @@ G.drawZombieV8=function(z){
     shadow(ctx,z.x,z.y+z.r*1.08,z.r*1.08,z.r*.3,.43);
     ctx.save();
     if(dead)ctx.translate(z.x,z.y+t*18);
-    ctx.translate(z.x,z.y-z.r*.05); ctx.rotate(a+Math.PI/2); ctx.globalAlpha=alpha;
+    ctx.translate(z.x,z.y-z.r*.05); ctx.globalAlpha=alpha;
     if(hue!==undefined)ctx.filter="hue-rotate("+hue+"deg) saturate(1.25)";
     ctx.imageSmoothingEnabled=true;
     ctx.drawImage(img,f*128,0,128,128,-w/2,-h/2,w,h);
