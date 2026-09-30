@@ -78,7 +78,26 @@ G.startWave=function(){
   if(G.shouldShowEnemyIntro&&G.shouldShowEnemyIntro(G.wave))G.showEnemyIntro(G.wave,begin);else begin();
 };
 G.startShop=function(){G.state='shop';G.shopUntil=Infinity;G.ui.shopPanel.classList.remove('hidden');G.ui.shopTimer.textContent='准备完成后，点击“开始下一波”继续';G.renderShop()};
-G.startNextWave=function(){if(G.state!=='shop')return;G.ui.shopPanel.classList.add('hidden');G.wave++;G.waveTransition=false;G.startWave()};
+G.startNextWave=function(){
+  if(G.state!=='shop')return;
+  // Fully release the shop state before starting the next run segment.
+  G.ui.shopPanel.classList.add('hidden');
+  G.wave++;
+  G.waveTransition=false;
+  G.state='playing';
+  G.spawnTimer=450;
+  G.reloadTimer=0;
+  G.reloadWeapon=0;
+  G.attackTimer=0;
+  G.fireTimer=0;
+  G.mouse.down=false;
+  G.keys._shiftUsed=false;
+  G.keys._spaceUsed=false;
+  G.startWave();
+  // Safety net: a next wave must never remain idle because of a stale transition flag.
+  G.state='playing';
+  G.waveTransition=false;
+};
 G.toggleShop=function(){if(G.state==='shop')return;if(G.waveTransition)G.startShop()};
 G.endWave=function(){if(G.waveTransition)return;G.waveTransition=true;G.coins+=Math.floor(50*(1+(G.getDNAUpgrade?.('coins')||0)*.05));G.playSound('victory');G.showMessage('🎉 WAVE COMPLETE +$50',1600);setTimeout(()=>{if(G.state==='playing')G.startShop()},1700)};
 
