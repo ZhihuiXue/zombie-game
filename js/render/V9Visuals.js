@@ -14,12 +14,12 @@ G.drawWorldV9=function(){
     const W=c.width,H=c.height;
     // Base ground with subtle tonal bands.
     const bg=x.createLinearGradient(0,0,W,H);
-    bg.addColorStop(0,'#1a2a24');bg.addColorStop(.48,'#23352d');bg.addColorStop(1,'#101c18');
+    bg.addColorStop(0,'#31443a');bg.addColorStop(.48,'#3b5145');bg.addColorStop(1,'#26382f');
     x.fillStyle=bg;x.fillRect(0,0,W,H);
     // Fine terrain grain.
     for(let gy=0;gy<H;gy+=18)for(let gx=0;gx<W;gx+=18){
       const n=hash(gx,gy);
-      x.fillStyle=n>.5?'rgba(130,155,135,.055)':'rgba(0,0,0,.045)';
+      x.fillStyle=n>.5?'rgba(170,190,165,.075)':'rgba(0,0,0,.025)';
       x.fillRect(gx,gy,18,18);
     }
     // Rich ground dressing: cracked asphalt, grass tufts, puddles, tire marks and scattered litter.
@@ -84,7 +84,7 @@ G.drawWorldV9=function(){
     for(const a of G.walls||[]){
       if(a.kind==='tree')continue;
       const r=Math.max(3,Math.min(a.w,a.h)*.08);
-      x.fillStyle='rgba(0,0,0,.30)';x.fillRect(a.x+9,a.y+11,a.w,a.h);
+      x.fillStyle='rgba(0,0,0,.22)';x.fillRect(a.x+9,a.y+11,a.w,a.h);
       const roof=x.createLinearGradient(a.x,a.y,a.x,a.y+a.h);
       roof.addColorStop(0,'#5a625f');roof.addColorStop(.08,'#424b48');roof.addColorStop(1,'#202925');
       x.fillStyle=roof;x.beginPath();x.roundRect(a.x,a.y,a.w,a.h,r);x.fill();
@@ -176,7 +176,7 @@ G.drawPlayerV9=function(){
   if(G.invuln>0&&Math.floor(G.invuln/70)%2===0)ctx.globalAlpha=.48;
   const S=1.55;ctx.scale(S,S);
   // Large tactical survivor silhouette.
-  ctx.fillStyle='rgba(0,0,0,.48)';ctx.beginPath();ctx.ellipse(2,21,18,6,0,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(2,31,20,5,0,0,TAU);ctx.fill();
   // Legs with boots and knee highlights.
   ctx.lineCap='round';ctx.lineWidth=6.5;
   limb(ctx,-5,7,-4+walk*10,19,4,'#3b454a','#11171a');
@@ -347,7 +347,7 @@ G.drawV9Lighting=function(){
 G.drawVignetteV9=function(){
   const ctx=G.ctx;
   const g=ctx.createRadialGradient(G.W/2,G.H/2,Math.min(G.W,G.H)*.34,G.W/2,G.H/2,Math.max(G.W,G.H)*.72);
-  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.72,'rgba(0,0,0,.10)');g.addColorStop(1,'rgba(0,0,0,.48)');
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.72,'rgba(0,0,0,.06)');g.addColorStop(1,'rgba(0,0,0,.28)');
   ctx.fillStyle=g;ctx.fillRect(0,0,G.W,G.H);
 };
 G.drawVignette=G.drawVignetteV9;
