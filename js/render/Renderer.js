@@ -187,22 +187,6 @@ G.updateUI = function(){
 
 
 /* V7 Dynamic Character Lighting — subtle world light, muzzle/fire/lightning accents */
-G.drawDynamicLighting=function(){
-  if(G.state!=='playing')return;
-  const ctx=G.ctx,now=performance.now();
-  ctx.save();ctx.globalCompositeOperation='screen';
-  const sx=G.player.x-G.camera.x,sy=G.player.y-G.camera.y;
-  // Player ambient pool.
-  let g=ctx.createRadialGradient(sx,sy,4,sx,sy,125);g.addColorStop(0,'rgba(150,205,185,.10)');g.addColorStop(.55,'rgba(95,160,140,.035)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(sx-125,sy-125,250,250);
-  // Weapon muzzle light.
-  if(G.player.muzzle>0){const a=G.aim(),x=sx+Math.cos(a)*46,y=sy+Math.sin(a)*46,w=G.weapons[G.selectedWeapon]?.color||'#ffd36b';const mg=ctx.createRadialGradient(x,y,1,x,y,82);mg.addColorStop(0,w+'88');mg.addColorStop(.28,w+'2f');mg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=mg;ctx.fillRect(x-82,y-82,164,164);}
-  // Flamethrower heat spill.
-  if(G.mouse.down&&G.selectedWeapon===4&&G.owned[4]){const a=G.aim(),x=sx+Math.cos(a)*90,y=sy+Math.sin(a)*90;const fg=ctx.createRadialGradient(x,y,4,x,y,150);fg.addColorStop(0,'rgba(255,125,35,.22)');fg.addColorStop(.35,'rgba(255,75,20,.07)');fg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=fg;ctx.fillRect(x-150,y-150,300,300);}
-  // Boss core light.
-  if(G.boss){const b=G.boss,bx=b.x-G.camera.x,by=b.y-G.camera.y,phase=b.phase||1;const col=phase===3?'#ff4c42':phase===2?'#ffbd4a':'#7fe7ff';const bg=ctx.createRadialGradient(bx,by,3,bx,by,170);bg.addColorStop(0,col+'55');bg.addColorStop(.3,col+'16');bg.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=bg;ctx.fillRect(bx-170,by-170,340,340);}
-  // Lightning briefly lifts the whole scene, without changing gameplay.
-  if(G.weather?.id==='storm'&&G.weatherLightning>0){ctx.globalAlpha=Math.min(.16,G.weatherLightning/260);ctx.fillStyle='#dff7ff';ctx.fillRect(0,0,G.W,G.H);}
-  ctx.restore();
-};
+G.drawDynamicLighting=function(){};
 const _drawV7Base=G.draw;
 G.draw=function(){_drawV7Base();G.drawDynamicLighting?.();};
