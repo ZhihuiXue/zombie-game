@@ -15,7 +15,9 @@ G.ui = {
   stats:document.getElementById("stats"), weaponText:document.getElementById("weaponText"),
   ammoText:document.getElementById("ammoText"), dashText:document.getElementById("dashText"),
   grenadeText:document.getElementById("grenadeText"), message:document.getElementById("message"),
-  achievement:document.getElementById("achievement"), levelPanel:document.getElementById("levelPanel"),
+  achievement:document.getElementById("achievement"),
+  dnaPanel:document.getElementById("dnaPanel"),dnaText:document.getElementById("dnaText"),dnaGrid:document.getElementById("dnaGrid"),
+  enemyIntro:document.getElementById("enemyIntro"),enemyIntroWave:document.getElementById("enemyIntroWave"),enemyIntroIcon:document.getElementById("enemyIntroIcon"),enemyIntroName:document.getElementById("enemyIntroName"),enemyIntroDesc:document.getElementById("enemyIntroDesc"),enemyIntroDont:document.getElementById("enemyIntroDismiss"), levelPanel:document.getElementById("levelPanel"),
   levelCards:document.getElementById("levelCards"), shopPanel:document.getElementById("shopPanel"),
   shopTimer:document.getElementById("shopTimer"), shopGrid:document.getElementById("shopGrid"),
   startNext:document.getElementById("startNext"), gameOverPanel:document.getElementById("gameOverPanel"),
@@ -32,9 +34,10 @@ G.camera={x:0,y:0}; G.shake=0; G.messageUntil=0; G.selectedWeapon=1;
 G.particles=[]; G.bullets=[]; G.zombies=[]; G.drops=[]; G.texts=[]; G.walls=[]; G.grenades=[]; G.burnZones=[]; G.powerups=[]; G.boss=null;
 G.dashTimer=0; G.attackTimer=0; G.reloadTimer=0; G.fireTimer=0; G.invuln=0; G.playTime=0; G.phase=1; G.achievementTimer=0;
 G.audioCtx=null; G.masterGain=null; G.soundOn=true; G.reloadWeapon=0;
+G.introDismissed=JSON.parse(localStorage.getItem('zo_intro_dismissed')||'{}');G.introAfter=null;G.dnaLevels=G.dnaLevels||{};
 G.uiTick=0; G.uiInterval=100; G.vignette=null; G.vignetteW=0; G.vignetteH=0; G.killSaveTimer=0;
 
-G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,recoil:0,muzzle:0,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:0,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:96,5:15}};
+G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,recoil:0,muzzle:0,flameTick:0,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:0,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:96,5:15}};
 G.weapons={
 1:{name:'Pistol',rate:260,damage:22,spread:.035,shots:1,speed:900,color:'#e8e0c5'},
 2:{name:'SMG',rate:85,damage:11,spread:.11,shots:1,speed:1000,color:'#d7e8e0'},
@@ -58,7 +61,8 @@ G.resetGame=function(){
   G.score=0;G.coins=0;G.kills=0;G.level=1;G.xp=0;G.xpNeed=100;G.spawnTimer=0;
   G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;
   G.selectedWeapon=1;G.owned={1:true,2:true,3:true,4:false,5:false};
-  Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3});
+  Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0});
+  if(G.applyDNABonuses)G.applyDNABonuses();
   for(const k in G.player.mag)G.player.mag[k]=G.player.maxMag[k];
   G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.makeMap();
   G.ui.menuPanel.classList.add('hidden');G.ui.gameOverPanel.classList.add('hidden');G.ui.shopPanel.classList.add('hidden');G.ui.levelPanel.classList.add('hidden');
@@ -68,12 +72,12 @@ G.resetGame=function(){
 G.startWave=function(){
   if(G.state!=='playing')return;
   G.waveKills=0;G.waveTotal=G.endless?12+Math.floor(G.wave*3.5):10+G.wave*3;G.spawnTimer=650;G.phase=1;
-  G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);
-  if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900);
+  const begin=()=>{G.showMessage((G.wave%5===0?'👑 BOSS WAVE ':'🌊 WAVE ')+G.wave,1800);if(G.wave%5===0)setTimeout(()=>{if(G.state==='playing')G.spawnBoss()},900)};
+  if(G.shouldShowEnemyIntro&&G.shouldShowEnemyIntro(G.wave))G.showEnemyIntro(G.wave,begin);else begin();
 };
 G.startShop=function(){G.state='shop';G.shopUntil=performance.now()+7000;G.ui.shopPanel.classList.remove('hidden');G.renderShop()};
 G.toggleShop=function(){if(G.state==='shop')return;if(G.waveTransition)G.startShop()};
-G.endWave=function(){if(G.waveTransition)return;G.waveTransition=true;G.coins+=50;G.showMessage('🎉 WAVE COMPLETE +$50',1600);setTimeout(()=>{if(G.state==='playing')G.startShop()},1700)};
+G.endWave=function(){if(G.waveTransition)return;G.waveTransition=true;G.coins+=Math.floor(50*(1+(G.getDNAUpgrade?.('coins')||0)*.05));G.playSound('victory');G.showMessage('🎉 WAVE COMPLETE +$50',1600);setTimeout(()=>{if(G.state==='playing')G.startShop()},1700)};
 
 G.updateBullets=function(dt){
   for(const b of G.bullets){
@@ -104,7 +108,7 @@ G.update=function(dt){
     if(performance.now()>G.shopUntil){G.state='playing';G.ui.shopPanel.classList.add('hidden');G.wave++;G.waveTransition=false;G.startWave()}
     return;
   }
-  if(G.state==='level')return;
+  if(G.state==='level'||G.state==='intro')return;
   G.playTime+=dt;G.killSaveTimer+=dt;G.player.recoil=Math.max(0,G.player.recoil-dt);G.player.muzzle=Math.max(0,G.player.muzzle-dt);G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
   if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===3||w===5){const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}else G.player.mag[w]=G.player.maxMag[w]}}
   if(G.keys.has('shift')&&!G.keys._shiftUsed){G.keys._shiftUsed=true;G.dash()}if(!G.keys.has('shift'))G.keys._shiftUsed=false;
