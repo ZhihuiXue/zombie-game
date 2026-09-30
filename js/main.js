@@ -29,7 +29,7 @@ import "./systems/Weather.js";
 import "./systems/AdaptiveDirector.js";
 import "./player/PlayerProfile.js";
 import "./render/Renderer.js";
-import "./render/ZombieRenderer.js";
+import "./render/CharacterRenderer.js";
 import "./core/Input.js";
 import "./ui/UI.js";
 
