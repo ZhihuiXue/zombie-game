@@ -1,50 +1,72 @@
-/* V10.2.0 free directional sprite layer
- * Player: TheNess, CC0 - https://opengameart.org/content/rpg-sprite-8-direction-human-male-16x16
- * Zombie: Clint Bellanger, CC-BY 3.0 - https://opengameart.org/content/zombie-sprites
+/* V10.3.0 — unified free top-down shooter character art
+ * Player: Riley Gombart, CC-BY 3.0
+ * Source: https://opengameart.org/content/animated-top-down-survivor-player
+ * Zombie: Riley Gombart, CC0
+ * Source: https://opengameart.org/content/animated-top-down-zombie
+ *
+ * We intentionally use complete PNG frames instead of slicing a tiny RPG sheet.
+ * This removes the old "paper/cardboard" look and keeps player + zombie art in
+ * the same top-down shooter visual language.
  */
-const G=globalThis,TAU=Math.PI*2;
-const oldP=G.drawPlayerV9,oldZ=G.drawZombieV9;
-const player=new Image(),zombie=new Image();
-player.src="https://opengameart.org/sites/default/files/sprite_oga.png";
-zombie.src="https://opengameart.org/sites/default/files/zombie_topdown.png";
+const G=globalThis, TAU=Math.PI*2;
+const raw="https://raw.githubusercontent.com/adil192/top-down-zombie-shooter/master/images/";
+const playerIdle=[0,4,8,12,16].map(n=>raw+"Top_Down_Survivor/rifle/idle/survivor-idle_rifle_"+n+".png");
+const playerMove=[0,4,8,12,16].map(n=>raw+"Top_Down_Survivor/rifle/move/survivor-move_rifle_"+n+".png");
+const zombieIdle=[0,4,8,12,16].map(n=>raw+"Top_Down_Zombie/skeleton-idle_"+n+".png");
+const zombieMove=[0,4,8,12,16].map(n=>raw+"Top_Down_Zombie/skeleton-move_"+n+".png");
+const cache=new Map();
+function img(url){let x=cache.get(url);if(x)return x;x=new Image();x.decoding="async";x.src=url;cache.set(url,x);return x;}
+[...playerIdle,...playerMove,...zombieIdle,...zombieMove].forEach(img);
 
-function dir(a){return ((Math.round(((a+TAU)%TAU)/(TAU/8)))%8+8)%8}
-function src(img,cols,rows,c,r){
- if(!img.complete||!img.naturalWidth)return null;
- return {x:img.naturalWidth*c/cols,y:img.naturalHeight*r/rows,w:img.naturalWidth/cols,h:img.naturalHeight/rows};
+function shadow(ctx,x,y,w,h,a=0.42){
+ ctx.save();ctx.fillStyle="rgba(0,0,0,"+a+")";ctx.beginPath();
+ ctx.ellipse(x,y+7,w,h,0,0,TAU);ctx.fill();ctx.restore();
 }
-function sheet(ctx,img,cols,rows,c,r,x,y,w,h){
- const s=src(img,cols,rows,c,r);if(!s)return false;
- ctx.imageSmoothingEnabled=false;ctx.drawImage(img,s.x,s.y,s.w,s.h,x-w/2,y-h,w,h);return true;
+function sprite(ctx,url,x,y,w,h,angle=0,flip=false,alpha=1){
+ const im=img(url);
+ if(!im.complete||!im.naturalWidth)return false;
+ ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(flip?-1:1,1);
+ ctx.globalAlpha=alpha;ctx.imageSmoothingEnabled=true;
+ ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();return true;
 }
-function shadow(ctx,x,y,s=1){
- ctx.save();ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(x,y+5,25*s,8*s,0,0,TAU);ctx.fill();ctx.restore();
+function aimAngle(){
+ return typeof G.aim==="function"?G.aim():Math.atan2((G.input?.mouseY??G.mouseY??0)-(G.canvas?.height?G.canvas.height/2:0),(G.input?.mouseX??G.mouseX??0)-(G.canvas?.width?G.canvas.width/2:0));
 }
-function gun(ctx,x,y,a,flash){
- ctx.save();ctx.translate(x,y-38);ctx.rotate(a);ctx.lineCap="round";
- ctx.strokeStyle="#11181b";ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(43,0);ctx.stroke();
- ctx.strokeStyle="#566267";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(40,0);ctx.stroke();
- ctx.fillStyle="#20282b";ctx.fillRect(9,-5,14,10);ctx.fillRect(5,3,10,13);
- ctx.fillStyle="#111517";ctx.fillRect(40,-2,13,4);
- if(flash){ctx.globalAlpha=Math.min(1,G.player.muzzle/70);ctx.fillStyle="#ffd36b";ctx.shadowColor="#ffd36b";ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(53,0);ctx.lineTo(74,-9);ctx.lineTo(63,0);ctx.lineTo(74,9);ctx.closePath();ctx.fill();}
+function muzzle(ctx,x,y,a,power=1){
+ ctx.save();ctx.translate(x,y);ctx.rotate(a);
+ ctx.globalCompositeOperation="lighter";ctx.shadowColor="#ffbd55";ctx.shadowBlur=18;
+ const r=14+power*12;ctx.fillStyle="rgba(255,204,91,.9)";
+ ctx.beginPath();ctx.moveTo(r+18,0);ctx.lineTo(5,-7-power*5);ctx.lineTo(9,0);ctx.lineTo(5,7+power*5);ctx.closePath();ctx.fill();
  ctx.restore();
 }
-G.drawPlayerV10_2=function(){
- const p=G.player,c=G.ctx,a=G.aim?.()||0,m=Math.abs(p.vx||0)+Math.abs(p.vy||0)>.1;
- shadow(c,p.x,p.y);
- if(!sheet(c,player,6,8,m?Math.floor(performance.now()/120)%6:0,dir(a),p.x,p.y,92,92)){oldP?.();return;}
- gun(c,p.x,p.y,a,p.muzzle>0);
+G.drawPlayerV10_3=function(){
+ const p=G.player,c=G.ctx,a=aimAngle();
+ const moving=Math.hypot(p.vx||0,p.vy||0)>.15;
+ const frames=moving?playerMove:playerIdle;
+ const idx=Math.floor(performance.now()/95)%frames.length;
+ const bob=moving?Math.sin(performance.now()/75)*1.5:Math.sin(performance.now()/420)*.6;
+ shadow(c,p.x,p.y,34,10,.48);
+ const ok=sprite(c,frames[idx],p.x,p.y-30+bob,116,78,a,Math.cos(a)<0,.98);
+ if(!ok){G.drawPlayerV9?.();return;}
+ if((p.muzzle||0)>0)muzzle(c,p.x+Math.cos(a)*48,p.y-31+bob+Math.sin(a)*8,a,Math.min(1,p.muzzle/70));
 };
-G.drawZombieV10_2=function(z){
- const c=G.ctx,t=z.type||"normal",m=Math.abs(z.vx||0)+Math.abs(z.vy||0)>.1;
- const dx=(G.player?.x??z.x)-z.x,dy=(G.player?.y??z.y)-z.y;
- const row=dir(Math.atan2(dy,dx)),col=m?4+(Math.floor(performance.now()/130+(z.x+z.y)*.01)%8):0;
- const scale=t==="tank"?1.4:t==="exploder"?1.25:1;
- shadow(c,z.x,z.y,scale);
- if(!sheet(c,zombie,36,8,col,row,z.x,z.y,112*scale,126*scale)){oldZ?.(z);return;}
- if(t!=="normal"){c.save();c.globalAlpha=.25;c.fillStyle=t==="tank"?"#c7cdd0":t==="spitter"?"#59d596":t==="exploder"?"#ff7448":t==="hunter"?"#b77bd0":"#e0aa52";c.beginPath();c.ellipse(z.x,z.y-45*scale,18*scale,10*scale,0,0,TAU);c.fill();c.restore();}
+G.drawZombieV10_3=function(z){
+ const c=G.ctx,t=z.type||"normal";
+ const moving=Math.hypot(z.vx||0,z.vy||0)>.08;
+ const frames=moving?zombieMove:zombieIdle;
+ const idx=Math.floor(performance.now()/125+(z.x+z.y)*.01)%frames.length;
+ const scale=t==="tank"?1.48:t==="exploder"?1.28:t==="hunter"?1.08:t==="spitter"?1.12:1;
+ const a=Math.atan2((G.player?.y??z.y)-z.y,(G.player?.x??z.x)-z.x);
+ shadow(c,z.x,z.y,29*scale,9*scale,.43);
+ const ok=sprite(c,frames[idx],z.x,z.y-25*scale,104*scale,104*scale,a,Math.cos(a)<0,.98);
+ if(!ok){G.drawZombieV9?.(z);return;}
+ // Distinguish special enemies without replacing the underlying zombie silhouette.
+ if(t!=="normal"){
+  c.save();c.globalAlpha=.22;c.fillStyle=t==="tank"?"#d6dbe0":t==="spitter"?"#49d58a":t==="exploder"?"#ff6a45":t==="hunter"?"#bb82ff":"#e2ad58";
+  c.beginPath();c.ellipse(z.x,z.y-52*scale,23*scale,12*scale,0,0,TAU);c.fill();c.restore();
+ }
 };
-G.drawPlayerV9=G.drawPlayerV10_2;
-G.drawZombieV9=G.drawZombieV10_2;
-G.drawPlayer=G.drawPlayerV10_2;
-G.drawZombie=G.drawZombieV10_2;
+G.drawPlayerV9=G.drawPlayerV10_3;
+G.drawZombieV9=G.drawZombieV10_3;
+G.drawPlayer=G.drawPlayerV10_3;
+G.drawZombie=G.drawZombieV10_3;
