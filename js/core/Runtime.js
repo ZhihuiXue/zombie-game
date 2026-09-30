@@ -34,7 +34,7 @@ G.dashTimer=0; G.attackTimer=0; G.reloadTimer=0; G.fireTimer=0; G.invuln=0; G.pl
 G.audioCtx=null; G.masterGain=null; G.soundOn=true; G.reloadWeapon=0;
 G.uiTick=0; G.uiInterval=100; G.vignette=null; G.vignetteW=0; G.vignetteH=0; G.killSaveTimer=0;
 
-G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:Infinity,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:Infinity,5:15}};
+G.player={x:1300,y:900,r:17,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,recoil:0,muzzle:0,mag:{1:12,2:30,3:6,4:24,5:5},maxMag:{1:12,2:30,3:6,4:24,5:5},reserve:{1:Infinity,2:Infinity,3:0,4:0,5:0},maxReserve:{1:Infinity,2:Infinity,3:36,4:96,5:15}};
 G.weapons={
 1:{name:'Pistol',rate:260,damage:22,spread:.035,shots:1,speed:900,color:'#e8e0c5'},
 2:{name:'SMG',rate:85,damage:11,spread:.11,shots:1,speed:1000,color:'#d7e8e0'},
@@ -60,7 +60,7 @@ G.resetGame=function(){
   G.selectedWeapon=1;G.owned={1:true,2:true,3:true,4:false,5:false};
   Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3});
   for(const k in G.player.mag)G.player.mag[k]=G.player.maxMag[k];
-  G.player.reserve[3]=0;G.player.reserve[5]=0;G.walls=[];G.makeMap();
+  G.player.reserve[3]=0;G.player.reserve[4]=0;G.player.reserve[5]=0;G.walls=[];G.makeMap();
   G.ui.menuPanel.classList.add('hidden');G.ui.gameOverPanel.classList.add('hidden');G.ui.shopPanel.classList.add('hidden');G.ui.levelPanel.classList.add('hidden');
   G.startWave();
 };
@@ -79,11 +79,20 @@ G.updateBullets=function(dt){
   for(const b of G.bullets){
     b.x+=b.vx*dt/1000;b.y+=b.vy*dt/1000;b.life-=dt;
     if(G.blocked(b.x,b.y,3))b.life=0;
-    for(const z of G.zombies){
+
+    // Player projectiles damage enemies; enemy projectiles damage only the player.
+    if(b.type==='enemy'){
+      if(b.life>0&&Math.hypot(b.x-G.player.x,b.y-G.player.y)<G.player.r+6){
+        G.damagePlayer(b.damage);b.life=0;
+      }
+      continue;
+    }
+
+    for(const z of G.spatialGrid.near(b.x,b.y,18)){
       if(b.life<=0)break;if(z.hp<=0||b.hit.has(z))continue;
       if(Math.hypot(b.x-z.x,b.y-z.y)<z.r+5){b.hit.add(z);G.damageZombie(z,b.damage);if(b.type===4){z.burnUntil=performance.now()+5000*G.player.burnBoost;z.burnTick=0}if(--b.pierce<=0)b.life=0}
     }
-    if(b.life>0&&G.boss&&Math.hypot(b.x-G.boss.x,b.y-G.boss.y)<G.boss.r+5){if(!b.hit.has(G.boss)){b.hit.add(G.boss);G.boss.hp-=b.damage;if(b.type!==5)b.life=0}}
+    if(b.life>0&&G.boss&&Math.hypot(b.x-G.boss.x,b.y-G.boss.y)<G.boss.r+5&&!b.hit.has(G.boss)){b.hit.add(G.boss);G.damageBoss(b.damage);if(b.type!==5)b.life=0}
   }
   let bw=0;for(let bi=0;bi<G.bullets.length;bi++){const b=G.bullets[bi];if(b.life>0)G.bullets[bw++]=b;}G.bullets.length=bw;
 };
@@ -96,7 +105,7 @@ G.update=function(dt){
     return;
   }
   if(G.state==='level')return;
-  G.playTime+=dt;G.killSaveTimer+=dt;G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
+  G.playTime+=dt;G.killSaveTimer+=dt;G.player.recoil=Math.max(0,G.player.recoil-dt);G.player.muzzle=Math.max(0,G.player.muzzle-dt);G.invuln=Math.max(0,G.invuln-dt);G.attackTimer=Math.max(0,G.attackTimer-dt);G.fireTimer=Math.max(0,G.fireTimer-dt);G.dashTimer=Math.max(0,G.dashTimer-dt);
   if(G.reloadTimer>0){G.reloadTimer-=dt;if(G.reloadTimer<=0){const w=G.reloadWeapon||G.selectedWeapon;const need=G.player.maxMag[w]-G.player.mag[w];if(w===3||w===5){const take=Math.min(need,G.player.reserve[w]);G.player.mag[w]+=take;G.player.reserve[w]-=take}else G.player.mag[w]=G.player.maxMag[w]}}
   if(G.keys.has('shift')&&!G.keys._shiftUsed){G.keys._shiftUsed=true;G.dash()}if(!G.keys.has('shift'))G.keys._shiftUsed=false;
   if(G.keys.has(' ')&&!G.keys._spaceUsed){G.keys._spaceUsed=true;G.melee()}if(!G.keys.has(' '))G.keys._spaceUsed=false;
@@ -106,7 +115,10 @@ G.update=function(dt){
   if(G.mouse.down&&G.fireTimer<=0)G.shoot();
   G.spawnTimer-=dt;if(!G.waveTransition&&G.waveKills<G.waveTotal&&G.spawnTimer<=0){G.spawnRandomZombie();G.spawnTimer=Math.max(420,900-G.wave*18)}
   if(!G.waveTransition&&G.waveKills>=G.waveTotal&&G.zombies.length===0&&!G.boss)G.endWave();
-  G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);G.updateGrenades(dt);G.updateDrops(dt);G.updatePowerups(dt);G.updateParticles(dt);G.updateTexts(dt);
+  G.spatialGrid.build();
+  G.updateBullets(dt);G.updateZombies(dt);G.updateBoss(dt);
+  G.spatialGrid.build();
+  G.updateGrenades(dt);G.updateDrops(dt);G.updatePowerups(dt);G.updateParticles(dt);G.updateTexts(dt);
   if(G.killSaveTimer>=5000){localStorage.setItem('zo_kills',G.totalKills);G.killSaveTimer=0;}
   if(G.shake>0)G.shake=Math.max(0,G.shake-dt);
   G.camera.x=Math.max(0,Math.min(G.WORLD.w-G.W,G.player.x-G.W/2));G.camera.y=Math.max(0,Math.min(G.WORLD.h-G.H,G.player.y-G.H/2));

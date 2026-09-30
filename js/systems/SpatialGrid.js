@@ -1,0 +1,3 @@
+// Lightweight spatial hash used by combat/AI to avoid O(n²) scans.
+const G=globalThis;
+G.spatialGrid={cell:140,map:new Map(),build(){this.map.clear();for(const z of G.zombies){if(z.hp<=0)continue;const k=this.key(z.x,z.y);let a=this.map.get(k);if(!a)this.map.set(k,a=[]);a.push(z)}if(G.boss){const k=this.key(G.boss.x,G.boss.y);let a=this.map.get(k);if(!a)this.map.set(k,a=[]);a.push(G.boss)}},key(x,y){return (Math.floor(x/this.cell)<<16)^Math.floor(y/this.cell)},near(x,y,r){const out=[];const c=this.cell,cx=Math.floor(x/c),cy=Math.floor(y/c),n=Math.ceil(r/c);for(let ix=cx-n;ix<=cx+n;ix++)for(let iy=cy-n;iy<=cy+n;iy++){const a=this.map.get((ix<<16)^iy);if(a)for(const o of a)if(Math.abs(o.x-x)<=r&&Math.abs(o.y-y)<=r)out.push(o)}return out}};
