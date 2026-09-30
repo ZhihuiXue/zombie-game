@@ -179,8 +179,8 @@ G.drawPlayerV9=function(){
   ctx.fillStyle='rgba(0,0,0,.48)';ctx.beginPath();ctx.ellipse(2,21,18,6,0,0,TAU);ctx.fill();
   // Legs with boots and knee highlights.
   ctx.lineCap='round';ctx.lineWidth=6.5;
-  limb(ctx,-5,7,-8+walk*8,14,-4+walk*10,19,'#3b454a','#11171a');
-  limb(ctx,5,7,8-walk*8,14,4-walk*10,19,'#4b555a','#11171a');
+  limb(ctx,-5,7,-4+walk*10,19,4,'#3b454a','#11171a');
+  limb(ctx,5,7,4-walk*10,19,4,'#4b555a','#11171a');
   ctx.fillStyle='#101619';ctx.beginPath();ctx.ellipse(-6+walk*10,21,5.5,2.8,-.12,0,TAU);ctx.ellipse(6-walk*10,21,5.5,2.8,.12,0,TAU);ctx.fill();
   // Backpack.
   ctx.fillStyle='#1a2528';roundRect(ctx,-12,-5,7,18,2.5);ctx.fill();
