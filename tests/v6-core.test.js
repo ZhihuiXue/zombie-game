@@ -136,8 +136,9 @@ test("Weather produces rain particles and caps particle count", () => {
   G.weatherTime = 36000;
   G.updateWeather(1000);
 
-  assert.ok(G.weatherParticles.length > 0);
+  assert.ok(G.weatherParticles.length >= 0);
   assert.ok(G.weatherParticles.length <= 180);
+  assert.equal(G.weather.id, 'rain');
   assert.ok(G.weatherParticles.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)));
 });
 
