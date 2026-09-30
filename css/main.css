@@ -1,4 +1,4 @@
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100c;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}canvas{display:block;width:100vw;height:100vh;cursor:crosshair}#ui{position:fixed;inset:0;pointer-events:none}.panel{position:absolute;background:rgba(7,12,10,.82);border:1px solid #4f665b;border-radius:12px;box-shadow:0 10px 30px #0008}.top{left:12px;top:12px;padding:10px 13px;min-width:280px}.bar{height:9px;background:#26342e;border-radius:9px;overflow:hidden;margin:4px 0 7px}.fill{height:100%;width:100%;transition:width .12s}.hp{background:#d94a4a}.xp{background:#54a7ff}.boss{background:#d33}.stat{font-size:13px;line-height:1.5}.right{right:12px;top:12px;padding:10px 12px;text-align:right}.msg{left:50%;top:18%;transform:translateX(-50%);padding:10px 18px;font-size:22px;font-weight:700;text-shadow:0 2px 5px #000;opacity:0;transition:opacity .15s}.center{left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,92vw);padding:24px;text-align:center;pointer-events:auto}.hidden{display:none}.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:15px}.btn{pointer-events:auto;border:1px solid #70877a;background:#18251f;color:#fff;border-radius:9px;padding:10px 15px;font-size:15px;cursor:pointer}.btn:hover{background:#26382f}.cardrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.card{width:180px;min-height:125px;text-align:left;padding:13px;border:1px solid #52685d;border-radius:10px;background:#111b17;cursor:pointer}.card:hover{border-color:#9ac8ad;background:#192820}.small{font-size:12px;color:#b9c8c1}.shopGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:15px}.shopItem{padding:12px;border:1px solid #52685d;border-radius:10px;background:#111b17;cursor:pointer}.shopItem:hover{background:#1b2c24}.disabled{opacity:.45;cursor:not-allowed}.kbd{display:inline-block;padding:1px 5px;border:1px solid #66776e;border-radius:4px;background:#111814}.title{font-size:28px;margin:0 0 8px}.subtitle{color:#b9c8c1}.achievement{position:absolute;right:12px;bottom:12px;padding:9px 12px;max-width:280px;opacity:0;transform:translateY(10px);transition:.2s}.achievement.show{opacity:1;transform:translateY(0)}.reloadBadge{font-size:11px;color:#c9d7d0;margin-left:6px;letter-spacing:.3px}.soundBtn{position:absolute;left:12px;bottom:12px;pointer-events:auto}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07100c;color:#fff;font-family:Arial,"Microsoft YaHei",sans-serif}canvas{display:block;width:100vw;height:100vh;cursor:crosshair}#ui{position:fixed;inset:0;z-index:30;pointer-events:none}.panel{position:absolute;background:rgba(7,12,10,.82);border:1px solid #4f665b;border-radius:12px;box-shadow:0 10px 30px #0008}.top{left:12px;top:12px;padding:10px 13px;min-width:280px}.bar{height:9px;background:#26342e;border-radius:9px;overflow:hidden;margin:4px 0 7px}.fill{height:100%;width:100%;transition:width .12s}.hp{background:#d94a4a}.xp{background:#54a7ff}.boss{background:#d33}.stat{font-size:13px;line-height:1.5}.right{right:12px;top:12px;padding:10px 12px;text-align:right}.msg{left:50%;top:18%;transform:translateX(-50%);padding:10px 18px;font-size:22px;font-weight:700;text-shadow:0 2px 5px #000;opacity:0;transition:opacity .15s}.center{left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,92vw);padding:24px;text-align:center;pointer-events:auto}.hidden{display:none}.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:15px}.btn{pointer-events:auto;border:1px solid #70877a;background:#18251f;color:#fff;border-radius:9px;padding:10px 15px;font-size:15px;cursor:pointer}.btn:hover{background:#26382f}.cardrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.card{width:180px;min-height:125px;text-align:left;padding:13px;border:1px solid #52685d;border-radius:10px;background:#111b17;cursor:pointer}.card:hover{border-color:#9ac8ad;background:#192820}.small{font-size:12px;color:#b9c8c1}.shopGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:15px}.shopItem{padding:12px;border:1px solid #52685d;border-radius:10px;background:#111b17;cursor:pointer}.shopItem:hover{background:#1b2c24}.disabled{opacity:.45;cursor:not-allowed}.kbd{display:inline-block;padding:1px 5px;border:1px solid #66776e;border-radius:4px;background:#111814}.title{font-size:28px;margin:0 0 8px}.subtitle{color:#b9c8c1}.achievement{position:absolute;right:12px;bottom:12px;padding:9px 12px;max-width:280px;opacity:0;transform:translateY(10px);transition:.2s}.achievement.show{opacity:1;transform:translateY(0)}.reloadBadge{font-size:11px;color:#c9d7d0;margin-left:6px;letter-spacing:.3px}.soundBtn{position:absolute;left:12px;bottom:12px;pointer-events:auto}
 .enemyIntroIcon{font-size:56px}.dnaPanel .shopGrid{max-height:55vh;overflow:auto}
 
 .shopSectionTitle{grid-column:1/-1;text-align:left;font-weight:700;padding:4px 2px;color:#d7e7df}
@@ -14,3 +14,47 @@
 .touchActions button:active{background:rgba(90,150,115,.8);transform:scale(.94)}
 @media (pointer:coarse){#touchControls{display:block}canvas{cursor:default}.soundBtn{bottom:170px}}
 @media (pointer:coarse) and (max-height:520px){.touchPad{width:100px;height:100px}.touchActions{right:130px}.touchActions button{width:40px;height:40px;font-size:15px}}
+
+/* Mobile HUD / touch layout */
+canvas{touch-action:none}
+.touchWeapons{position:absolute;left:50%;top:14px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto}
+.touchWeapons button{width:38px;height:34px;border-radius:9px;border:1px solid rgba(220,240,230,.35);background:rgba(10,22,17,.7);color:#fff;font-weight:700;font-size:13px;touch-action:none}
+.touchWeapons button:active{background:rgba(90,150,115,.8);transform:scale(.94)}
+@media (pointer:coarse){
+  .top{left:8px;top:8px;min-width:210px;max-width:44vw;padding:7px 9px}
+  .top .stat{font-size:11px}.bar{height:7px;margin:3px 0 5px}
+  .right{right:8px;top:8px;padding:7px 9px;max-width:38vw;font-size:12px}
+  .profileSummary{left:8px;top:92px;min-width:0;font-size:10px;padding:5px 7px}
+  .msg{top:13%;font-size:18px;max-width:72vw;text-align:center}
+  .soundBtn{left:auto;right:8px;bottom:164px;font-size:11px;padding:7px 9px}
+  .center{width:min(680px,94vw);max-height:88vh;overflow:auto;padding:14px}
+  .title{font-size:22px}.subtitle{font-size:13px}
+  .buttons .btn{min-height:42px}
+  .touchWeapons{top:auto;bottom:166px}
+  .touchWeapons button{width:36px;height:34px}
+  .touchActions{right:164px;bottom:24px}
+  .touchActions button{width:44px;height:44px}
+}
+@media (pointer:coarse) and (orientation:landscape){
+  .top{max-width:34vw}
+  .right{max-width:28vw}
+  .touchWeapons{bottom:118px}
+  .touchActions{right:132px;bottom:18px}
+  .touchActions button{width:40px;height:40px}
+  .movePad{left:18px;bottom:18px}.aimPad{right:18px;bottom:18px}
+  .soundBtn{bottom:118px}
+  .center{max-height:82vh}
+}
+@media (pointer:coarse) and (max-width:430px) and (orientation:portrait){
+  .top{max-width:48vw}.right{max-width:42vw}
+  .touchWeapons{bottom:168px}
+  .touchWeapons button{width:32px;height:32px}
+  .touchActions{right:158px}
+  .touchActions button{width:42px;height:42px}
+}
+@media (pointer:coarse) and (max-height:520px){
+  .touchPad{width:100px;height:100px}
+  .touchActions{right:128px}
+  .touchActions button{width:38px;height:38px}
+  .touchWeapons button{width:34px;height:30px}
+}
