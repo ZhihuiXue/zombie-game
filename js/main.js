@@ -27,6 +27,7 @@ import "./systems/Achievements.js";
 import "./systems/Events.js";
 import "./player/PlayerProfile.js";
 import "./render/Renderer.js";
+import "./render/ZombieRenderer.js";
 import "./core/Input.js";
 import "./ui/UI.js";
 
