@@ -10,14 +10,14 @@ const items=[
 ['rate','⚡ Fire Rate +10%','永久强化',120,()=>G.player.fireRate*=1.1],
 ['speed','🏃 Speed +8%','永久强化',100,()=>G.player.moveBoost*=1.08],
 ['hp','❤️ Max HP +15','永久强化',110,()=>{G.player.maxHp+=15;G.player.hp=Math.min(G.player.maxHp,G.player.hp+15)}],
-['flame','🔥 解锁喷火枪',G.owned[4]?'已经拥有':'本局解锁',180,()=>{G.owned[4]=true;G.player.reserve[4]=0}],
-['sniper','🎯 解锁狙击枪',G.owned[5]?'已经拥有':'本局解锁',220,()=>{G.owned[5]=true;G.player.reserve[5]=Math.min(G.player.maxReserve[5],G.player.reserve[5]+5)}],
+['flame','🔥 解锁喷火枪',G.owned[4]?'已经拥有':'本局解锁',180,()=>{G.owned[4]=true;G.player.reserve[4]=0;G.player.mag[4]=G.player.maxMag[4]}],
+['sniper','🎯 解锁狙击枪',G.owned[5]?'已经拥有':'本局解锁',220,()=>{G.owned[5]=true;G.player.reserve[5]=0;G.player.mag[5]=G.player.maxMag[5]}],
 ['shotAmmo','🟫 霰弹枪弹药','+6 发',40,()=>G.player.reserve[3]=Math.min(G.player.maxReserve[3],G.player.reserve[3]+6)],
-['sniperAmmo','🔹 狙击枪弹药','+3 发',60,()=>G.player.reserve[5]=Math.min(G.player.maxReserve[5],G.player.reserve[5]+3)],
-['flameAmmo','🔥 喷火枪燃料','+24 发',40,()=>G.player.reserve[4]=Math.min(G.player.maxReserve[4],G.player.reserve[4]+24)],
+...(G.owned[5]?[['sniperAmmo','🔹 狙击枪弹药','+3 发',60,()=>G.player.reserve[5]=Math.min(G.player.maxReserve[5],G.player.reserve[5]+3)]]:[]),
+...(G.owned[4]?[['flameAmmo','🔥 喷火枪燃料','+24 发',40,()=>G.player.reserve[4]=Math.min(G.player.maxReserve[4],G.player.reserve[4]+24)]]:[]),
 ['heal','🩹 医疗包','回复 40 HP',75,()=>G.player.hp=Math.min(G.player.maxHp,G.player.hp+40)],...equipItems,...evoItems
 ];
-G.ui.shopGrid.innerHTML='';
+G.ui.shopGrid.innerHTML='<div class="shopSectionTitle">🧩 装备（本局 Build）</div>';
 for(const [id,n,d,c,fn] of items){
  const ownedAlready=(id==='flame'&&G.owned[4])||(id==='sniper'&&G.owned[5]);
  const locked=(id==='flameAmmo'&&!G.owned[4]);

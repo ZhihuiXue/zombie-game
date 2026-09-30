@@ -9,7 +9,7 @@ G.fireFlamethrower=function(){
   if(G.player.mag[4]<=0){G.startReload();return}
   const a=G.aim();
   const now=performance.now();
-  const range=340,cone=.46;
+  const range=285,cone=.32;
 
   // The flamethrower is a continuous stream: hold the mouse to keep spraying.
   // Fuel is consumed at a steady rate instead of behaving like ordinary bullets.
@@ -33,10 +33,10 @@ G.fireFlamethrower=function(){
   // Dense flame particles make the stream visually obvious.
   for(let i=0;i<5;i++){
     const ang=a+(Math.random()-.5)*cone*1.9;
-    const dist=24+Math.random()*250;
+    const dist=18+Math.random()*235;
     const speed=90+Math.random()*180;
     G.particles.push({
-      x:G.player.x+Math.cos(ang)*dist*.22, y:G.player.y+Math.sin(ang)*dist*.22,
+      x:G.player.x+Math.cos(ang)*(18+dist*.16), y:G.player.y+Math.sin(ang)*(18+dist*.16),
       vx:Math.cos(ang)*speed, vy:Math.sin(ang)*speed,
       life:180+Math.random()*260,
       color:Math.random()<.55?'#ff7a18':Math.random()<.7?'#ffbd35':'#fff0a0',

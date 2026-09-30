@@ -1,2 +1,20 @@
 const G=globalThis;
-G.makeMap=function(){G.walls=[];const themes=['meadow','factory','ruins','lab'];G.mapTheme=themes[(G.wave-1)%4];const layout=G.wave%4;for(let i=0;i<15;i++){let x=250+((i*347+layout*130)%2000),y=180+((i*229+layout*210)%1300);let w=100+(i%3)*55,h=70+(i%4)*35,r={x,y,w,h};if(Math.abs(x-1300)<250&&Math.abs(y-900)<220)continue;G.walls.push(r)}G.worldCache=null};
+
+G.makeMap=function(){
+  G.walls=[];
+  const themes=['meadow','factory','ruins','lab'];
+  G.mapTheme=themes[Math.floor(Math.random()*themes.length)];
+  const count=10+Math.min(6,Math.floor(G.wave/5));
+  let tries=0;
+  while(G.walls.length<count && tries++<240){
+    const w=95+Math.random()*120,h=65+Math.random()*95;
+    const x=140+Math.random()*(G.WORLD.w-w-280), y=120+Math.random()*(G.WORLD.h-h-240);
+    const cx=x+w/2,cy=y+h/2;
+    // Keep a generous player start area open.
+    if(Math.abs(cx-G.WORLD.w/2)<360&&Math.abs(cy-G.WORLD.h/2)<300)continue;
+    // Keep obstacles separated enough to preserve routes through the arena.
+    if(G.walls.some(r=>x<r.x+r.w+70&&x+w>r.x-70&&y<r.y+r.h+70&&y+h>r.y-70))continue;
+    G.walls.push({x,y,w,h});
+  }
+  G.worldCache=null;
+};
