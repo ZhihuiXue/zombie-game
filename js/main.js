@@ -28,11 +28,11 @@ import "./systems/Events.js";
 import "./systems/Weather.js";
 import "./systems/AdaptiveDirector.js";
 import "./player/PlayerProfile.js";
-import "./render/Renderer.js?v=10.3.0";
-import "./render/V9Visuals.js?v=10.3.0";
+import "./render/Renderer.js?v=10.4.0";
+import "./render/V9Visuals.js?v=10.4.0";
 import "./core/Input.js";
-import "./render/V10Art.js?v=10.3.0";
-import "./render/V10Directional.js?v=10.3.0";
+import "./render/V10Art.js?v=10.4.0";
+import "./render/V10Directional.js?v=10.4.0";
 import "./ui/UI.js";
 
 const G=globalThis;
