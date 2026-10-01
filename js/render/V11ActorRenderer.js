@@ -28,7 +28,7 @@ function rig(){
   const bob=walk?Math.abs(Math.sin(now*.015))*1.15:0;
   const recoil=clamp((p?.recoil||0)*.72,0,7);
   const ax=p.x+Math.cos(a)*2*ACTOR;
-  const ay=p.y-bob-17*ACTOR;
+  const ay=p.y-bob;
   const muzzle=ax+Math.cos(a)*(s.muzzle*ACTOR-recoil);
   const muzzleY=ay+Math.sin(a)*(s.muzzle*ACTOR-recoil);
   return {a,s,step,bob,recoil,ax,ay,muzzle,muzzleY};
@@ -46,7 +46,7 @@ function stroke(c,x1,y1,x2,y2,w,a,b){
 }
 function weapon(c,r,flash){
   const {a,s,recoil}=r;
-  c.save();c.translate(2,-17);c.rotate(a);c.translate(-recoil/ACTOR,0);
+  c.save();c.translate(0,0);c.rotate(a);c.translate(-recoil/ACTOR,0);
   const metal='#182125',edge='#87979c',dark='#0a1013';
   c.lineJoin='round';c.fillStyle=metal;c.strokeStyle=edge;c.lineWidth=1.5;
   const len=s.muzzle;
