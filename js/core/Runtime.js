@@ -119,10 +119,20 @@ G.toggleShop=function(){if(G.state==='shop')return;if(G.waveTransition)G.startSh
 G.endWave=function(){if(G.waveTransition)return;G.waveTransition=true;G.coins+=Math.floor(50*(1+(G.getDNAUpgrade?.('coins')||0)*.05));G.playSound('victory');G.showMessage('🎉 WAVE COMPLETE +$50',1600);setTimeout(()=>{if(G.state==='playing')G.startShop()},1700)};
 
 G.updateBullets=function(dt){
+  const segmentHitsTree=(x1,y1,x2,y2,radius)=>{
+    for(const t of G.trees||[]){
+      const tr=Math.max(10,(t.r||14)*(t.kind==='tree'?.62:.72))+radius;
+      const dx=x2-x1,dy=y2-y1,len2=dx*dx+dy*dy;
+      const u=len2?Math.max(0,Math.min(1,((t.x-x1)*dx+(t.y-y1)*dy)/len2)):0;
+      const px=x1+dx*u,py=y1+dy*u;
+      if(Math.hypot(px-t.x,py-t.y)<=tr)return true;
+    }
+    return false;
+  };
   for(const b of G.bullets){
     const prevX=b.x,prevY=b.y;
     b.x+=b.vx*dt/1000;b.y+=b.vy*dt/1000;b.life-=dt;
-    if(G.blocked(b.x,b.y,3)){G.addImpactFX?.(b.x,b.y,Math.atan2(b.vy,b.vx),b.type);b.life=0;}
+    if(G.blocked(b.x,b.y,3)||segmentHitsTree(prevX,prevY,b.x,b.y,3)){G.addImpactFX?.(b.x,b.y,Math.atan2(b.vy,b.vx),b.type);b.life=0;}
 
     // Player projectiles damage enemies; enemy projectiles damage only the player.
     if(b.type==='enemy'){
