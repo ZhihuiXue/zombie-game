@@ -35,6 +35,7 @@ import "./render/V10Art.js?v=10.8.0";
 import "./render/V10Directional.js?v=10.8.0";
 import "./render/V10FX.js?v=10.8.0";
 import "./render/V10WeaponRig.js?v=10.8.0";
+import "./render/V11ActorRenderer.js?v=11.0.0";
 import "./ui/UI.js";
 
 const G=globalThis;
