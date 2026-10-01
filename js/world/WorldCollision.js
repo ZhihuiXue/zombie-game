@@ -40,12 +40,11 @@ G.blocked=function(x,y,r){
   for(const a of G.walls||[]){
     if(x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)return true;
   }
-  // Trees are physical cover too. The canopy is decorative, but the trunk
-  // occupies a compact circular collision volume so players, zombies and
-  // bullets cannot simply pass through the tree.
+  // Trees are real hard cover. Use a generous trunk/low-canopy radius so
+  // the obstacle is obvious in play instead of being a tiny invisible point.
   for(const t of G.trees||[]){
-    const trunk=Math.max(7,(t.r||14)*.42);
-    if(Math.hypot(x-t.x,y-t.y)<r+trunk)return true;
+    const obstacle=Math.max(10,(t.r||14)*(t.kind==='tree'?.62:.72));
+    if(Math.hypot(x-t.x,y-t.y)<r+obstacle)return true;
   }
   return !!G.circleHitsWater(x,y,r);
 };
