@@ -31,7 +31,7 @@ G.endless=false; G.score=0; G.coins=0; G.kills=0;
 G.totalKills=Number(localStorage.getItem('zo_kills')||0); G.dna=Number(localStorage.getItem('zo_dna')||0);
 G.level=1; G.xp=0; G.xpNeed=100; G.spawnTimer=0; G.last=performance.now();
 G.camera={x:0,y:0}; G.shake=0; G.messageUntil=0; G.selectedWeapon=1;
-G.particles=[]; G.bullets=[]; G.zombies=[]; G.drops=[]; G.texts=[]; G.walls=[]; G.grenades=[]; G.burnZones=[]; G.powerups=[]; G.boss=null;
+G.particles=[]; G.bullets=[]; G.zombies=[]; G.drops=[]; G.texts=[]; G.walls=[]; G.grenades=[]; G.burnZones=[]; G.powerups=[]; G.boss=null; G.combatDecals=[];
 G.dashTimer=0; G.attackTimer=0; G.reloadTimer=0; G.fireTimer=0; G.invuln=0; G.playTime=0; G.phase=1; G.achievementTimer=0;
 G.audioCtx=null; G.masterGain=null; G.soundOn=true; G.reloadWeapon=0;
 G.introDismissed=JSON.parse(localStorage.getItem('zo_intro_dismissed')||'{}');G.introAfter=null;G.dnaLevels=G.dnaLevels||{};
@@ -76,7 +76,7 @@ G.findSafePlayerSpawn=function(){
 G.resetGame=function(){
   G.state='playing';G.wave=1;G.waveKills=0;G.waveTotal=0;G.waveTransition=false;G.shopUntil=0;G.weather=null;G.weatherTime=0;
   G.score=0;G.coins=0;G.kills=0;G.adaptive?.reset();G.level=1;G.combo=0;G.equipmentSynergiesApplied={};G.comboTimer=0;G.weaponXP=0;G.currentEvent=null;G.eventUntil=0;G.equipmentOwned=[];G.equipmentSlots={head:null,body:null,boots:null,module:null,artifact:null};G.weaponLevel={1:1,2:1,3:1,4:1,5:1};G.evolved={};G.mapTheme='grassland';G.xp=0;G.xpNeed=100;G.spawnTimer=0;
-  G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;
+  G.particles=[];G.bullets=[];G.zombies=[];G.drops=[];G.texts=[];G.grenades=[];G.burnZones=[];G.powerups=[];G.boss=null;G.combatDecals=[];
   G.selectedWeapon=1;G.weapons=JSON.parse(JSON.stringify(G.baseWeapons));G.owned={1:true,2:true,3:true,4:false,5:false};
   Object.assign(G.player,{x:1300,y:900,hp:100,maxHp:100,speed:250,damage:1,fireRate:1,moveBoost:1,burnBoost:1,dashCooldown:0,dashTime:0,meleeDamage:42,grenades:3,flameTick:0,damageReduction:0,critChance:0,lifeSteal:0,coinBoost:1,xpBoost:1,grenadeRadius:145,grenadeDamage:110,adrenaline:false,sniperBoost:1,shield:0});
   G.player.hitFlash=0;G.player.dashFx=0;G.damageFlash=0;G.player.maxMag={1:12,2:30,3:6,4:24,5:5};G.player.mag={1:12,2:30,3:6,4:24,5:5};G.player.reserve={1:Infinity,2:Infinity,3:0,4:0,5:0};G.player.maxReserve={1:Infinity,2:Infinity,3:36,4:96,5:15};G.player.lastFlameFuel=0;G.player.lastFlameSound=0;
@@ -120,8 +120,9 @@ G.endWave=function(){if(G.waveTransition)return;G.waveTransition=true;G.coins+=M
 
 G.updateBullets=function(dt){
   for(const b of G.bullets){
+    const prevX=b.x,prevY=b.y;
     b.x+=b.vx*dt/1000;b.y+=b.vy*dt/1000;b.life-=dt;
-    if(G.blocked(b.x,b.y,3))b.life=0;
+    if(G.blocked(b.x,b.y,3)){G.addImpactFX?.(b.x,b.y,Math.atan2(b.vy,b.vx),b.type);b.life=0;}
 
     // Player projectiles damage enemies; enemy projectiles damage only the player.
     if(b.type==='enemy'){
