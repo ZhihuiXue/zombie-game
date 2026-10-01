@@ -222,8 +222,10 @@ function drawZombie(z){
 
   ctx.save();
   ctx.translate(z.x,z.y);
-  ctx.scale(scale,scale);
-  ctx.globalAlpha=dead?Math.max(0,1-(z.deathTimer||0)/520):1;
+  const deathP=dead?Math.min(1,1-(z.deathTimer||0)/620):0;
+  if(dead){ctx.rotate((z.deathAngle||0)*deathP*z.deathDir);ctx.translate(0,deathP*r*.18);}
+  ctx.scale(scale,scale*(dead?(1-deathP*.32):1));
+  ctx.globalAlpha=dead?Math.max(0,1-deathP):1;
 
   // Legs.
   stroke(ctx,-r*.25,r*.38,-r*.36+stride,r*1.05,r*.28,pal[0],pal[1]);
