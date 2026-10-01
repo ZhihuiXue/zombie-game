@@ -27,7 +27,7 @@ G.generateWorld=function(){
     }
   }
   // Buildings/rock obstacles never overlap water or bridges, and keep a safe spawn area.
-  const obstacleCount=10+Math.min(8,Math.floor(G.wave/4));
+  const obstacleCount=7+Math.min(4,Math.floor(G.wave/5));
   let tries=0;
   while(G.walls.length<obstacleCount&&tries++<700){
     const w=rand(90,190),h=rand(65,130),x=rand(130,G.WORLD.w-w-130),y=rand(110,G.WORLD.h-h-110),r={x,y,w,h,kind:'rock'};
@@ -38,7 +38,7 @@ G.generateWorld=function(){
     G.walls.push(r);G.rocks.push({x:x+w/2,y:y+h/2,w,h});
   }
   if(isForest){
-    const n=34+Math.min(26,G.wave);tries=0;
+    const n=22+Math.min(12,G.wave);tries=0;
     while(G.trees.length<n&&tries++<1600){
       const r=rand(16,28),x=rand(70,G.WORLD.w-70),y=rand(70,G.WORLD.h-70),c={x,y};
       if(Math.hypot(x-center.x,y-center.y)<390)continue;
@@ -47,7 +47,6 @@ G.generateWorld=function(){
       if(G.walls.some(q=>circleRectOverlap(c,r,q,24)))continue;
       if(G.trees.some(t=>Math.hypot(x-t.x,y-t.y)<r+t.r+35))continue;
       G.trees.push({x,y,r,kind:'tree'});
-      G.walls.push({x:x-r*.72,y:y-r*.72,w:r*1.44,h:r*1.44,kind:'tree'});
     }
   } else {
     let n=18, tries2=0;
