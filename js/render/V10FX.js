@@ -15,20 +15,6 @@ function edgePoint(x,y){
 function drawAtmosphere(){
  if(G.state!=='playing')return;
  const c=G.ctx,now=performance.now(),p=G.player,a=G.aim?.()||0;
- // Flashlight / weapon-facing illumination.
- c.save();
- c.globalCompositeOperation='screen';
- const sx=p.x-(G.camera?.x||0),sy=p.y-(G.camera?.y||0);
- const len=Math.max(G.W,G.H)*.62,spread=.34;
- const grad=c.createRadialGradient(sx,sy,10,sx,sy,len);
- grad.addColorStop(0,'rgba(255,244,200,.12)');
- grad.addColorStop(.3,'rgba(235,225,180,.045)');
- grad.addColorStop(1,'rgba(235,225,180,0)');
- c.fillStyle=grad;c.fillRect(0,0,G.W,G.H);
- c.globalAlpha=.055;c.fillStyle='#f5e7bb';
- c.beginPath();c.moveTo(sx,sy);c.arc(sx,sy,len,a-spread,a+spread);c.closePath();c.fill();
- c.restore();
-
  // Rain / dust follows the current weather label but stays subtle.
  const rainy=String(G.weatherLabel?.()||G.weather||'').toLowerCase().includes('rain')||String(G.weather||'').toLowerCase().includes('rain');
  c.save();c.globalAlpha=rainy?.20:.08;c.lineWidth=1;
