@@ -28,13 +28,12 @@ import "./systems/Events.js";
 import "./systems/Weather.js";
 import "./systems/AdaptiveDirector.js";
 import "./player/PlayerProfile.js";
-import "./render/Renderer.js?v=10.8.0";
+import "./render/Renderer.js?v=11.1.0";
 import "./core/Input.js";
-import "./render/V10Directional.js?v=10.8.0";
-import "./render/V10FX.js?v=10.8.0";
-import "./render/V11ActorRenderer.js?v=11.0.0";
-import "./render/V11WorldRenderer.js?v=11.0.0";
-import "./render/V11CombatFX.js?v=11.0.0";
+import "./render/V10FX.js?v=11.1.0";
+import "./render/V11ActorRenderer.js?v=11.1.0";
+import "./render/V11WorldRenderer.js?v=11.1.0";
+import "./render/V11CombatFX.js?v=11.1.0";
 import "./ui/UI.js";
 
 const G=globalThis;
