@@ -60,7 +60,7 @@ G.generateWorld=function(){
       G.trees.push({x,y,r,kind:'bush'});
     }
   }
-  G.worldCache=null;G.worldCacheV9=null;
+  G.worldCache=null;G.worldCacheV9=null;G.worldCacheV11=null;G.worldCacheV11W=0;G.worldCacheV11H=0;
   G.invalidatePathField?.();
 };
 export {G};
