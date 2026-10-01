@@ -63,3 +63,6 @@ canvas{touch-action:none}
 #ui .top .stat:first-child b{letter-spacing:.4px}
 .reloadBadge{display:inline-block;padding:1px 5px;border:1px solid rgba(255,207,74,.5);border-radius:4px;background:rgba(255,170,30,.10);box-shadow:0 0 8px rgba(255,190,50,.16)}
 @media (pointer:coarse){.panel{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}}
+
+/* V10.7 commercial HUD polish */
+.panel{background:linear-gradient(180deg,rgba(10,19,16,.88),rgba(4,9,8,.82));border-color:rgba(151,181,164,.42);box-shadow:0 14px 38px rgba(0,0,0,.55),0 0 28px rgba(74,122,94,.07) inset}.btn{background:linear-gradient(180deg,#1b2a23,#111b17);border-color:rgba(147,180,160,.45);box-shadow:0 3px 12px rgba(0,0,0,.28)}.btn:hover{background:linear-gradient(180deg,#294036,#17271f);border-color:#9fc8ae;box-shadow:0 0 16px rgba(110,190,140,.16)}.top,.right{box-shadow:0 10px 30px rgba(0,0,0,.48),0 0 22px rgba(80,130,100,.06) inset}.card,.shopItem,.codexCard,.controlCard,.profileCard{background:linear-gradient(180deg,#14201b,#0d1612);border-color:rgba(116,153,135,.4);box-shadow:0 6px 18px rgba(0,0,0,.2)}
