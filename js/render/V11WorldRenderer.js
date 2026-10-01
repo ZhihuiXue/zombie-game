@@ -63,20 +63,6 @@ G.drawWorldV11=function(){
       x.strokeStyle='#c19a68';x.lineWidth=3;x.strokeRect(b.x+2,b.y+2,b.w-4,b.h-4);
     }
 
-    // Decorative industrial props. They are visual only; collision remains owned by WorldGenerator.
-    const prop=(px,py,w,h)=>{
-      x.fillStyle='rgba(0,0,0,.34)';x.fillRect(px+9,py+h+7,w,h*.28);
-      x.fillStyle='#343e3d';x.fillRect(px,py,w,h);
-      x.fillStyle='#56625e';x.fillRect(px+4,py+4,w-8,7);
-      x.strokeStyle='#151c1b';x.strokeRect(px,py,w,h);
-      x.fillStyle='rgba(193,199,180,.20)';x.fillRect(px+9,py+15,w-18,3);
-    };
-    for(let i=0;i<24;i++){
-      const px=80+hash(i,301)*(W-160),py=70+hash(i,331)*(H-140);
-      if(Math.hypot(px-W/2,py-H/2)<330)continue;
-      prop(px,py,18+hash(i,351)*28,14+hash(i,371)*20);
-    }
-
     // Buildings / containers use a roof + vertical face to create height.
     for(const a of G.walls||[]){
       if(a.kind==='tree')continue;
