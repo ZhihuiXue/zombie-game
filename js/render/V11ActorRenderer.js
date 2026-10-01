@@ -100,13 +100,19 @@ function drawPlayer(){
   // Shoulder pads.
   c.fillStyle='#34474e';c.beginPath();c.arc(10,-9,5.5,0,TAU);c.fill();c.fillStyle='#53666c';c.beginPath();c.arc(-10,-8,5.5,0,TAU);c.fill();
 
-  // Arms and weapon share the same transform.
-  const rear=r.s.grip/ACTOR-r.recoil/ACTOR,fore=r.s.fore/ACTOR-r.recoil/ACTOR;
+  // Arms + hands follow the same aim transform as the weapon.
+  // The old version kept the hands mostly horizontal while the gun rotated,
+  // so the gun visibly detached as soon as the mouse moved off the right side.
+  const grip=r.s.grip/ACTOR-r.recoil/ACTOR;
+  const fore=r.s.fore/ACTOR-r.recoil/ACTOR;
+  c.save();c.rotate(r.a);
   stroke(c,-7,5,8+step*.8,4,6,'#3c4d52','#202b30');
-  stroke(c,8+step*.8,4,rear,3,5.2,'#596c72','#27353a');
+  stroke(c,8+step*.8,4,grip,3,5.2,'#596c72','#27353a');
   stroke(c,7,-5,13-step*.8,-1,6.3,'#7a8a8e','#2d3c41');
   stroke(c,13-step*.8,-1,fore,1,5.4,'#66797f','#29383d');
-  c.fillStyle='#d19a77';c.beginPath();c.arc(rear,3,3.2,0,TAU);c.arc(fore,1,3,0,TAU);c.fill();
+  c.fillStyle='#d19a77';
+  c.beginPath();c.arc(grip,3,3.2,0,TAU);c.arc(fore,1,3,0,TAU);c.fill();
+  c.restore();
   weapon(c,r,p.muzzle||0);
   c.restore();
 
